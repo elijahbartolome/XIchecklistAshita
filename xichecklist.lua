@@ -87,7 +87,6 @@ playertracker = {
 	['Masterlevels_total'] = 1100,
 	['Masterlevels_highest'] = 0,
 	
-
 	['Homepoints_completed'] = 0,
 	['Homepoints_total'] = 0,
 	['Survivalguides_completed'] = 0,
@@ -126,17 +125,6 @@ local drag_dy  = 0
 local active_tab = 1
 local scroll     = 0
 local selected   = 1
-
-
-
-
-
-
---local hpmaps = require('maps/warps_homepoints')
-
-
-
-
 
 -------------------------------------------------
 -- DATA
@@ -186,9 +174,6 @@ warps_util = require('util/warps')
 
 local cmds = {
     quests = S{'quests','q'},
-    keyitems = S{'keyitems','ki'},
-    spells = S{'spells'},
-    coalition = S{'coalition','ca'},
 	test = S{'test'},
 
 }
@@ -276,8 +261,6 @@ windower.register_event('incoming chunk', function(id, data, modified, injected,
 				quests[log.type][log.area] = p['Quest Flags']
 			end
 			
-			--if (p.Type == 128) then windower.add_to_chat(207, '[current ToAH Quests]') vardumpfile(p) end --debug
-			
 			
         end
 		
@@ -303,15 +286,12 @@ windower.register_event('incoming chunk', function(id, data, modified, injected,
 		
 		local parseddata = packets.parse('incoming', data)
 		if (parseddata.Order == 6) then 
-						
 			tabs[7].items = {}
 			append_items(tabs[7].items, warps_util.checkhomepoints(data))
 			append_items(tabs[7].items, warps_util.checksurvivalguides(data))
 			append_items(tabs[7].items, warps_util.checkwaypoints(data))
 			
-			
 		end
-
 	end
 	
 	
@@ -323,14 +303,12 @@ end)
 
 function xichecklist_init()
 	
-	
 	tabs[1].items = {} -- reset main menu content
 	tabs[2].items = {} -- reset main menu content
 	tabs[3].items = {} -- reset main menu content
 	tabs[4].items = {} -- reset main menu content
 	tabs[5].items = {} -- reset main menu content
 	tabs[6].items = {} -- reset main menu content
-	
 	
 	-- log quests
 	tabs[2].items = quest_util.log_quests('sandoriaquests')
@@ -366,39 +344,19 @@ function xichecklist_init()
 	append_items(tabs[7].items, check_playerspells('Geomancy'))
 	append_items(tabs[7].items, check_playerspells('Trust'))
 		
-	
 	-- Log Job Points Spent
 	check_jobpoints()
 	
-	
-	
 end
 
 
 
 
-
-
-function vardumpfile(o)
-	
-	local inspect = require('data/inspect')
-	local fh = io.open('C:\\Users\\Faleh\\Downloads\\Windower\\addons\\xichecklist\\vardump.lua', 'w')
-	fh:write(inspect(o))
-	windower.add_to_chat(207, 'debug 1!')
-	fh:close()
-	windower.add_to_chat(207, 'var dump!')
-end
 
 
 windower.register_event('addon command', function(...)
     if arg[1] == 'eval' then
         assert(loadstring(table.concat(arg, ' ',2)))()
-    elseif cmds.quests:contains(arg[1]) then
-		
-		xichecklist_init()
-		
-		
-		
     elseif cmds.test:contains(arg[1]) then
 		
 		--update_maintab()
@@ -416,12 +374,9 @@ end)
 local playerkeyitems = windower.ffxi.get_key_items()
 
 function check_keyitems(keyitemtype)
-	
 	local keyitem_list = {}
 	totalkeyitems = 0
 	obtainedkeyitems = 0
-	
-	
 	for id, value in pairs(res.key_items) do
 		if (value.category == keyitemtype) then
 			if table.find(playerkeyitems, id) then
@@ -433,30 +388,20 @@ function check_keyitems(keyitemtype)
 				table.insert (keyitem_list, '\\cs(255,255,0)' .. value.en ..'\\cr') -- add unobtained keyitem
 				totalkeyitems = totalkeyitems + 1
 			end
-			
 		end
-		
 	end
-	
-	--windower.add_to_chat(158, '-- '.. keyitemtype .. ' %d/%d Obtained ':format(obtainedkeyitems,totalkeyitems))
-	
 	playertracker[keyitemtype..'_completed'] = obtainedkeyitems
 	playertracker[keyitemtype..'_total'] = totalkeyitems
-	
 	return keyitem_list
-	
 end
 
 
 local playerspells = windower.ffxi.get_spells()
 
 function check_playerspells(spelltype)
-	
 	local spells_list = {}
 	totalplayerspells = 0
 	learnedspells = 0
-	
-	
 	for id, value in pairs(res.spells) do
 		if (value.type == spelltype) then
 			if (playerspells[id] == true) then
@@ -468,42 +413,28 @@ function check_playerspells(spelltype)
 				table.insert (spells_list, '\\cs(255,255,0)' .. value.en ..'\\cr') -- add unlearned spell
 				totalplayerspells = totalplayerspells + 1
 			end
-			
 		end
-		
 	end
-	
-	
-	--windower.add_to_chat(158, '-- '.. spelltype .. ' %d/%d Learned ':format(learnedspells,totalplayerspells))
-	
 	playertracker[spelltype..'_completed'] = learnedspells
 	playertracker[spelltype..'_total'] = totalplayerspells
-	
 	return spells_list
-	
 end
 
 function check_jobpoints()
-	
 	local total_jp_spent = 0
 	local total_master_levels = 0
 	local highest_master_level = 0
 	local playerinfo = windower.ffxi.get_player()
-	
 	-- job points
 	if (type(playerinfo.job_points) == 'table') then 
 		for job, value in pairs(playerinfo.job_points) do
 			total_jp_spent = total_jp_spent + playerinfo.job_points[job].jp_spent
 		end
 	end
-	
-	
 	playertracker['Jobpoints_completed'] = total_jp_spent
-	
 	local menulinecolor = '(255,255,0)'
 	if (total_jp_spent==46200) then menulinecolor = '(0,255,0)' end
 	table.insert(tabs[1].items, '\\cs' .. menulinecolor .. '-- Job Points '.. total_jp_spent .. '/46200\\cr')
-	
 	-- master levels
 	if (type(playerinfo.master_levels) == 'table') then 
 		for job, value in pairs(playerinfo.master_levels) do
@@ -511,11 +442,8 @@ function check_jobpoints()
 			if (playerinfo.master_levels[job] > highest_master_level) then highest_master_level = playerinfo.master_levels[job] end
 		end
 	end
-	
 	playertracker['Masterlevels_completed'] = total_master_levels
 	playertracker['Masterlevels_highest'] = highest_master_level
-	
-	
 end
 
 -------------------------------------------------
