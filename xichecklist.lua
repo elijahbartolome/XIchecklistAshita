@@ -1,6 +1,6 @@
 _addon.name     = 'xichecklist'
 _addon.author   = 'Anokata' -- with help of Aragan , also used code from Ivaar@github & stefanmielke@github
-_addon.version  = '0.1.1'
+_addon.version  = '0.1.2'
 _addon.commands = {'xichecklist', 'xic'}
 
 
@@ -93,6 +93,8 @@ playertracker = {
 	['Racejobinstinct_total'] = 0,
 	['MonsterLevels_completed'] = 0,
 	['MonsterLevels_total'] = 0,
+	['MonsterVariants_completed'] = 0,
+	['MonsterVariants_total'] = 0,	
 	
 }
 
@@ -243,6 +245,7 @@ function update_maintab()
 	table.insert(tabs[1].items, '- Monstrosity (WIP)')
 	append_maintab('Monster Levels %d/%d', playertracker['MonsterLevels_completed'], playertracker['MonsterLevels_total'])
 	append_maintab('Race/Job Instincts %d/%d', playertracker['Racejobinstinct_completed'], playertracker['Racejobinstinct_total'])
+	append_maintab('Monster Variants %d/%d', playertracker['MonsterVariants_completed'], playertracker['MonsterVariants_total'])
 	
 end
 
@@ -294,6 +297,8 @@ windower.register_event('incoming chunk', function(id, data, modified, injected,
 		end
 		if (parseddata.Order == 4) then
 			mons_util.racejobinstincts = parseddata['Instinct Bitfield 3']
+			mons_util.variants_bitfield = parseddata['Variants Bitfield']
+			
 			xichecklist_init()
 		end
 	end
@@ -356,6 +361,8 @@ function xichecklist_init()
 	-- log Monstrosity levels & Race/Job Instincts
 	table.insert(tabs[8].items, '- Species Levels')
 	append_items(tabs[8].items, mons_util.log_monsterlevels())
+	table.insert(tabs[8].items, '- Monster Variants')
+	append_items(tabs[8].items, mons_util.log_variants())
 	table.insert(tabs[8].items, '- Race / Job Instincts')
 	append_items(tabs[8].items, mons_util.log_racejobinstincts())
 	

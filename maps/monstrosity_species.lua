@@ -1,7 +1,11 @@
 return {
-	[1]='Rabbit',
+	-- by bitfield
+	-- adress 0x063 Order 3
+	-- parseddata['Monster Level Char field']
+	--[0]='',
+	[1]='Rabbit', -- confirmed
 	[2]='Behemoth',
-	[3]='Tiger',
+	[3]='Tiger', -- confirmed
 	[4]='Sheep',
 	[5]='Ram (Sheep)',
 	[6]='Dhalmel',
@@ -16,7 +20,7 @@ return {
 	[15]='Funguar',
 	[16]='Treant Sapling',
 	[17]='Morbol',
-	[18]='Mandragora',
+	[18]='Mandragora', -- confirmed
 	[19]='Sabotender',
 	[20]='Flytrap',
 	[21]='Goobbue',
@@ -41,7 +45,7 @@ return {
 	[40]='Kulox (Gnat)',
 	[41]='Twitherym',
 	[42]='Chapuli',
-	[43]='Lizard',
+	[43]='Lizard', -- confirmed
 	[44]='Raptor',
 	[45]='Adamantoise',
 	[46]='Bugard',
@@ -70,179 +74,11 @@ return {
 	[69]='Bird',
 	[70]='Cockatrice',
 	[71]='Roc',
-	[72]='Bat',
+	[72]='Bat', -- confirmed
 	[73]='Hippogryph',
 	[74]='Apkallu',
 	[75]='Colibri',
 	[76]='Amphiptere',
 	[77]='Harpeia',
 	[78]='Tulfaire',
-	
-	
-	--[[
-	-- variants
-	[79]='A jiggly creature from a world beyond.',
-	[80]='An ore-loving creature from a world beyond.',
-	
-	[81]='Onyx Rabbit',
-	[82]='Alabaster Rabbit',
-	[83]='Lapinion (Rabbit)',
-	
-	[84]='Elasmoth (Behemoth)',
-	
-	[85]='Legendary Tiger',
-	[86]='Smilodon (Tiger)',
-	
-	[87]='Karakul (Sheep)',
-	[88]='Lucerewe (Sheep)',
-	
-	[89]='Ovim (Sheep)',
-	
-	[90]='Lynx (Coeurl)',
-	[91]='Collared Lynx (Coeurl)',
-	
-	[92]='Legendary Manticore',
-	
-	[93]='Orthrus (Cerberus)',
-	
-	[94]='Bipedal Gnole',
-	
-	[95]='Coppercap (Funguar)',
-	
-	[96]='Treant',
-	[97]='Flowering Treant',
-	[98]='Scarlet-tinged Treant',
-	[99]='Barren Treant',
-	[100]='Necklaced Treant',
-	
-	[101]='Pygmy Morbol',
-	[102]='Scarce Morbol',
-	[103]='Ameretat (Morbol)',
-	[104]='Purbol (Morbol)',
-	
-	[105]='Korrigan (Mandragora)',
-	[106]='Lycopodium (Mandragora)',
-	[107]='Pygmy Mandragora',
-	[108]='Adenium (Mandragora)',
-	[109]='Pachypodium (Mandragora)',
-	[110]='Enlightened Mandragora',
-	[111]='New Year Mandragora',
-	
-	[112]='Sabotender Florido',
-	
-	[113]='Mitrastema (Rafflesia)',
-	
-	[114]='Vermilion and Onyx Bee',
-	[115]='Zaffre Bee',
-	
-	[116]='Onyx Beetle',
-	[117]='Gamboge Beetle',
-	
-	[118]='Eruca (Crawler)',
-	[119]='Emerald Crawler',
-	[120]='Pygmy Emerald Crawler',
-	
-	[121]='Vermilion Fly',
-	
-	[122]='Scolopendrid (Scorpion)',
-	[123]='Unusual Scolopendrid (Scorpion)',
-	
-	[124]='Reticulated Spider',
-	[125]='Vermilion and Onyx Spider',
-	
-	[126]='Onyx Antlion',
-	[127]='Formiceros (Antlion)',
-	
-	[128]='Arundimite (Diremite)',
-	
-	[129]='Azure Chigoe',
-	
-	[130]='Coiled Wamouracampa (Wamoura larva)',
-	[131]='Wamoura',
-	[132]='Coral Wamoura',
-	
-	[133]='Gold Ladybug',
-	
-	[134]='Midge (Gnat)',
-	
-	[135]='Vermilion Mantis',
-	[136]='Russet Mantis',
-	
-	[137]='Ashen Lizard',
-	
-	[138]='Emerald Raptor',
-	[139]='Vermilion Raptor',
-	
-	[140]='Pygmy Adamantoise',
-	[141]='Legendary Adamantoise',
-	[142]='Ferromantoise (Adamantoise)',
-	
-	[143]='Abyssobugard (Bugard)',
-	
-	[144]='Tarichuk (Eft)',
-	
-	[145]='Unusual Wivre',
-	
-	[146]='Sibilus (Peiste)',
-	
-	[147]='Vermilion Worm',
-	[148]='Onyx Worm',
-	[149]='Entozoon (Worm)',
-	
-	[150]='Clot (Slime)',
-	[151]='Gold Slime',
-	[152]='Boil (Slime)',
-	
-	[153]='Gold Flan',
-	[154]='Blancmange (Flan)',
-	
-	[155]='Pygmy Sandworm',
-	[156]='Gigaworm (Sandworm)',
-	
-	[157]='Azure Leech',
-	[158]='Obdella (Leech)',
-	
-	[159]='Vermilion Crab',
-	[160]='Hermitage Crab',
-	[161]='Vermilion Hermitage Crab',
-	[162]='Porter Crab (Crab)',
-	
-	[163]='Jagil (Pugil)',
-	[164]='Azure Sea Monk',
-	
-	[165]='Limascabra (Uragnite)',
-	
-	[166]='Pygmy Orobon',
-	[167]='Ogrebon (Orobon)',
-	
-	[168]='Azure Toad',
-	[169]='Vermilion Toad',
-	
-	[170]='Onyx Bird',
-	
-	[171]='Ziz (Cockatrice)',
-	
-	[172]='Legendary Roc',
-	[173]='Gagana (Roc)',
-	
-	[174]='Bats',
-	[175]='Vermilion Bat',
-	[176]='Vermilion Bats',
-	
-	[177]='Inguza (Apkallu)',
-	
-	[178]='Toucalibri (Colibri)',
-	
-	[179]='Sanguiptere (Amphiptere)',
-	
-	[180]='Vermilion Harpeia',
-	[181]='Alabaster Harpeia',
-	
-	
-	[182]='A jiggly creature from a world beyond.',
-	[183]='A jiggly creature from a world beyond.',
-	[184]='An ore-loving creature from a world beyond.',
-	[185]='An ore-loving creature from a world beyond.',
-	
-	--]]
 }
