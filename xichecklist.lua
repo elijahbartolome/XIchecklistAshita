@@ -562,6 +562,7 @@ draw()
 -- MOUSE HANDLER
 -------------------------------------------------
 windower.register_event('mouse', function(type, x, y, delta, blocked)
+	if (ui:visible() == false) then return end
     local px, py = ui:pos()
     local items = tabs[active_tab].items
     local count = #items
