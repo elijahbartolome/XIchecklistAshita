@@ -31,7 +31,7 @@ end
 function titles_util.add_title(id)
 	if (not (playertitles[tostring(id)] == true)) then
 		playertitles[tostring(id)] = true
-		playertitles:save(windower.ffxi.get_player().name)
+		playertitles:save()
 		util.addon_log('Title added: ' .. res.titles[id].en)
 	end
 end

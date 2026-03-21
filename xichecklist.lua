@@ -1,6 +1,6 @@
 _addon.name     = 'xichecklist'
 _addon.author   = 'Anokata'
-_addon.version  = '0.2.2'
+_addon.version  = '0.3.0'
 _addon.commands = {'xichecklist', 'xic'}
 
 
@@ -97,12 +97,20 @@ playertracker = {
 	
 	['Titles_completed'] = 0,
 	['Titles_total'] = 0,
+	
+	['RoE_completed'] = 0,
+	['RoE_total'] = 0,
+	['RoEhidden_completed'] = 0,
+	['RoEhidden_total'] = 0,
 }
 
 --playertracker = config.load('data/'.. windower.ffxi.get_player().name .. '.xml', playertracker)
 
 playertitles = {}
-playertitles = config.load('data/titles.xml', playertitles)
+playertitles = config.load('data/'.. windower.ffxi.get_player().name .. '_titles.xml', playertitles)
+
+playerroe = {}
+playerroe = config.load('data/'.. windower.ffxi.get_player().name .. '_roe.xml', playerroe)
 
 
 -------------------------------------------------
@@ -172,6 +180,10 @@ tabs = {
         name = 'Titles',
         items = {}
     },
+	{
+        name = 'RoE',
+        items = {}
+    },
 }
 
 -------------------------------------------------
@@ -183,6 +195,7 @@ quest_util = require('util/quests')
 warps_util = require('util/warps')
 mons_util = require('util/monstrosity')
 titles_util = require('util/titles')
+roe_util = require('util/roe')
 
 local cmds = {
     help = S{'help','h'},
@@ -212,6 +225,10 @@ end
 function update_maintab()
 	
 	tabs[1].items = {}
+	
+	table.insert(tabs[1].items, '- RoE')
+	append_maintab('RoE %d/%d', playertracker['RoE_completed'], playertracker['RoE_total'])
+	append_maintab('Hidden RoE %d/%d', playertracker['RoEhidden_completed'], playertracker['RoEhidden_total'])
 	
 	table.insert(tabs[1].items, '- Missions')
 	append_maintab('Campaign Ops %d/%d', playertracker['campaign_completed'], playertracker['campaign_total'])
@@ -264,10 +281,7 @@ function update_maintab()
 	append_maintab('Titles %d/%d', playertracker['Titles_completed'], playertracker['Titles_total'])
 	append_items(tabs[1].items, titles_util.list_titles_bycontent())
 	
-	
-	
 end
-
 
 
 windower.register_event('incoming chunk', function(id, data, modified, injected, blocked)
@@ -296,7 +310,6 @@ windower.register_event('incoming chunk', function(id, data, modified, injected,
 		
 		xichecklist_init()
     end
-	
 	
 	if id == 0x063 then
 		local parseddata = packets.parse('incoming', data)
@@ -332,6 +345,20 @@ windower.register_event('incoming chunk', function(id, data, modified, injected,
 		titles_util.add_title(parseddata['Title'])
 	end
 	
+	-- do RoE
+	if id == 0x112 then
+		if (not roe_data) then roe_data = '' end
+		local parseddata = packets.parse('incoming', data)
+		roe_data = roe_data .. parseddata['RoE Quest Bitfield'] -- the packet will be repeated three times, gather the data first
+		--vardumpfile(append_table)
+		
+		if (parseddata.Order == 3) then
+			
+			--windower.add_to_chat(167, 'total roe: ' .. totalroe)
+			roe_util.handle_roe_data(data)
+		end
+	end
+	
 	--xichecklist_init()
 	update_maintab()
 	
@@ -350,6 +377,7 @@ function xichecklist_init()
 	
 	tabs[8].items = {} -- reset main menu content
 	tabs[9].items = {} -- reset main menu content
+	tabs[10].items = {} -- reset main menu content
 	
 	-- log quests
 	tabs[2].items = quest_util.log_quests('sandoriaquests')
@@ -398,6 +426,9 @@ function xichecklist_init()
 	
 	-- log Monstrosity levels & Race/Job Instincts
 	append_items(tabs[9].items, titles_util.log_titles())
+	
+	-- log RoE
+	append_items(tabs[10].items, roe_util.log_roe())
 	
 end
 
@@ -675,7 +706,7 @@ windower.register_event('addon command', function(...)
 		
 		--update_maintab()
 		windower.add_to_chat(100, "test")
-		
+		roe_util.log_roehidden()
     end
 end)
 
