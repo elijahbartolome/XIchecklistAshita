@@ -1,14 +1,14 @@
-**Usage**:
+## **Usage**:
 
-_//lua load xichecklist_ , then **zone** to get the UI menu updated
+`//lua load xichecklist` , then <ins>**zone**</ins> to get the UI menu updated
 
-_//xic hide|show_ to hide or show the UI
+`//xic hide|show` to hide or show the UI
 
-_//xic test_ to print some hidden/unknown RoE
+`//xic test` to print some hidden/unknown RoE
 
-to update titles you must speak to all Titles NPCs
+to update titles you must speak to all [Titles NPCs](https://www.bg-wiki.com/ffxi/Category:Title_NPC)
 
-**Tracking**:
+## **Tracking**:
 
 - Monstrosity (Monster levels / Race & Job Instincts / Monster variants)
 - Titles
@@ -37,7 +37,7 @@ the menu will only show missing items like quests,key items, spells, home points
 
 - this thing is free to use/share/edit/anything i dont care what you do with it
 
-**Todo Plan**: (but most likely will be too lazy to do it)
+### **Todo Plan**: (but most likely will be too lazy to do it)
 - titles exclusion list
 - merits
 - outpost warps
@@ -52,7 +52,7 @@ the menu will only show missing items like quests,key items, spells, home points
 
 
 
-**Changes**:
+### **Changes**:
 
 - 0.1.0 - release
 - 0.1.1 - added Monstrosity levels and race/job instincts
