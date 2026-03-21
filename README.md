@@ -59,6 +59,6 @@ the menu will only show missing items like quests,key items, spells, home points
 - 0.1.2 - add Monstrosity variants
 - 0.2.0 - added titles (thanks to kaytecat)
 - 0.2.1 - added list of Titles by content
-- 0.3.0 - added RoE Tracking (thanks to Daleterrence for resources)
+- 0.3.0 - added RoE Tracking (thanks to Daleterrence / Darkdoom for resources)
 
 
