@@ -185,7 +185,7 @@ return {
     [183] = 'Beneath a Blood-red Sky',
     [184] = 'The Wyrm God',
     [185] = 'Meanwhile, Back on Abyssea',
-    [186] = 'A Moonlight Requite',
+    --[186] = 'A Moonlight Requite', -- non completable
     [187] = 'Dominion Op #10 (Grauberg)',
     [188] = 'Dominion Op #11 (Grauberg)',
     [189] = 'Dominion Op #12 (Grauberg)',

@@ -1,6 +1,6 @@
 _addon.name     = 'xichecklist'
 _addon.author   = 'Anokata'
-_addon.version  = '0.3.3'
+_addon.version  = '0.4.0'
 _addon.commands = {'xichecklist', 'xic'}
 
 
@@ -101,8 +101,7 @@ playertracker = {
 	
 	['RoE_completed'] = 0,
 	['RoE_total'] = 0,
-	['RoEhidden_completed'] = 0,
-	['RoEhidden_total'] = 0,
+	
 }
 
 --playertracker = config.load('data/'.. windower.ffxi.get_player().name .. '.xml', playertracker)
@@ -230,7 +229,6 @@ function update_maintab()
 	
 	table.insert(tabs[1].items, '- RoE')
 	append_maintab('RoE %d/%d', playertracker['RoE_completed'], playertracker['RoE_total'])
-	append_maintab('Hidden RoE %d/%d', playertracker['RoEhidden_completed'], playertracker['RoEhidden_total'])
 	
 	table.insert(tabs[1].items, '- Missions')
 	append_maintab('Campaign Ops %d/%d', playertracker['campaign_completed'], playertracker['campaign_total'])
@@ -301,15 +299,7 @@ windower.register_event('incoming chunk', function(id, data, modified, injected,
 			end
 		end
 		
-		-- do campaigns
-		if (p.Type == 48) then
-			campaings_completed_log['Completed Campaign Missions'] = p['Quest Flags']
-		elseif (p.Type == 56) then
-			campaings_completed_log['Completed Campaign Missions (2)'] = p['Quest Flags']
-		end
-		quests['completed']['campaign'] = campaings_completed_log['Completed Campaign Missions'] .. campaings_completed_log['Completed Campaign Missions (2)']
-		
-		xichecklist_init()
+		xichecklist_updatetabs('quests')
     end
 	
 	if id == 0x063 then
@@ -320,19 +310,17 @@ windower.register_event('incoming chunk', function(id, data, modified, injected,
 			append_items(tabs[7].items, warps_util.checkhomepoints(data))
 			append_items(tabs[7].items, warps_util.checksurvivalguides(data))
 			append_items(tabs[7].items, warps_util.checkwaypoints(data))
-			
 		end
 		-- do monstrosity
 		if (parseddata.Order == 3) then
 			mons_util.monster_levels = mons_util.char_field_to_table(parseddata['Monster Level Char field'])
 			--monster_instincts = bytes_to_table(parseddata['Instinct Bitfield 1'])
-			xichecklist_init()
+			xichecklist_updatetabs('monstrosity')
 		end
 		if (parseddata.Order == 4) then
 			mons_util.racejobinstincts = parseddata['Instinct Bitfield 3']
 			mons_util.variants_bitfield = parseddata['Variants Bitfield']
-			
-			xichecklist_init()
+			xichecklist_updatetabs('monstrosity')
 		end
 	end
 	
@@ -351,88 +339,96 @@ windower.register_event('incoming chunk', function(id, data, modified, injected,
 		if (not roe_data) then roe_data = '' end
 		local parseddata = packets.parse('incoming', data)
 		roe_data = roe_data .. parseddata['RoE Quest Bitfield'] -- the packet will be repeated three times, gather the data first
-		--vardumpfile(append_table)
-		
 		if (parseddata.Order == 3) then
-			
-			--windower.add_to_chat(167, 'total roe: ' .. totalroe)
 			roe_util.handle_roe_data(data)
+			xichecklist_updatetabs('roe')
 		end
 	end
-	
-	--xichecklist_init()
+	--]]
+	--xichecklist_updatetabs()
 	update_maintab()
 	
 end)
 
 
 
-function xichecklist_init()
+function xichecklist_updatetabs(tab)
 	
 	--tabs[1].items = {} -- reset main menu content
-	tabs[2].items = {} -- reset main menu content
-	tabs[3].items = {} -- reset main menu content
-	tabs[4].items = {} -- reset main menu content
+	--tabs[2].items = {} -- reset main menu content
+	--tabs[3].items = {} -- reset main menu content
+	--tabs[4].items = {} -- reset main menu content
 	tabs[5].items = {} -- reset main menu content
 	tabs[6].items = {} -- reset main menu content
 	
-	tabs[8].items = {} -- reset main menu content
+	--tabs[8].items = {} -- reset main menu content
 	tabs[9].items = {} -- reset main menu content
-	tabs[10].items = {} -- reset main menu content
+	--tabs[10].items = {} -- reset main menu content
 	
 	-- log quests
-	tabs[2].items = quest_util.log_quests('sandoria')
-	append_items(tabs[2].items, quest_util.log_quests('bastok'))
-	append_items(tabs[2].items, quest_util.log_quests('windurst'))
-	append_items(tabs[2].items, quest_util.log_quests('jeuno'))
-	append_items(tabs[2].items, quest_util.log_quests('ahturhgan'))
-	append_items(tabs[2].items, quest_util.log_quests('crystalwar'))
-	append_items(tabs[2].items, quest_util.log_quests('outlands'))
-	append_items(tabs[2].items, quest_util.log_quests('other'))
-	append_items(tabs[2].items, quest_util.log_quests('abyssea'))
-	append_items(tabs[2].items, quest_util.log_quests('adoulin'))
-	
-	-- log campaign ops
-	tabs[3].items = quest_util.log_campaign(campaigns_completed)
-	
-	-- log coalitions
-	tabs[4].items = quest_util.log_quests('coalition')
+	if (tab == 'quests') then
+		tabs[2].items = {}
+		tabs[3].items = {}
+		tabs[4].items = {}
+		
+		tabs[2].items = quest_util.log_quests('sandoria')
+		append_items(tabs[2].items, quest_util.log_quests('bastok'))
+		append_items(tabs[2].items, quest_util.log_quests('windurst'))
+		append_items(tabs[2].items, quest_util.log_quests('jeuno'))
+		append_items(tabs[2].items, quest_util.log_quests('ahturhgan'))
+		append_items(tabs[2].items, quest_util.log_quests('crystalwar'))
+		append_items(tabs[2].items, quest_util.log_quests('outlands'))
+		append_items(tabs[2].items, quest_util.log_quests('other'))
+		append_items(tabs[2].items, quest_util.log_quests('abyssea'))
+		append_items(tabs[2].items, quest_util.log_quests('adoulin'))
+		
+		-- log campaign ops
+		tabs[3].items = quest_util.log_campaign()
+		
+		-- log coalitions
+		tabs[4].items = quest_util.log_quests('coalition')
+	end
 	
 	-- log keyitems
 	tabs[5].items = check_keyitems('Permanent Key Items')
-	append_items(tabs[6].items, check_keyitems('Magical Maps'))
-	append_items(tabs[6].items, check_keyitems('Mounts'))
-	append_items(tabs[6].items, check_keyitems('Claim Slips'))
+	append_items(tabs[5].items, check_keyitems('Magical Maps'))
+	append_items(tabs[5].items, check_keyitems('Mounts'))
+	append_items(tabs[5].items, check_keyitems('Claim Slips'))
 	
 	-- log spells and trusts
 	tabs[6].items = check_playerspells('WhiteMagic')
-	append_items(tabs[7].items, check_playerspells('BlackMagic'))
-	append_items(tabs[7].items, check_playerspells('SummonerPact'))
-	append_items(tabs[7].items, check_playerspells('Ninjutsu'))
-	append_items(tabs[7].items, check_playerspells('BardSong'))
-	append_items(tabs[7].items, check_playerspells('BlueMagic'))
-	append_items(tabs[7].items, check_playerspells('Geomancy'))
-	append_items(tabs[7].items, check_playerspells('Trust'))
+	append_items(tabs[6].items, check_playerspells('BlackMagic'))
+	append_items(tabs[6].items, check_playerspells('SummonerPact'))
+	append_items(tabs[6].items, check_playerspells('Ninjutsu'))
+	append_items(tabs[6].items, check_playerspells('BardSong'))
+	append_items(tabs[6].items, check_playerspells('BlueMagic'))
+	append_items(tabs[6].items, check_playerspells('Geomancy'))
+	append_items(tabs[6].items, check_playerspells('Trust'))
 		
 	-- Log Job Points Spent
 	check_jobpoints()
 	
 	-- log Monstrosity levels & Race/Job Instincts
-	table.insert(tabs[8].items, '- Species Levels')
-	append_items(tabs[8].items, mons_util.log_monsterlevels())
-	table.insert(tabs[8].items, '- Monster Variants')
-	append_items(tabs[8].items, mons_util.log_variants())
-	table.insert(tabs[8].items, '- Race / Job Instincts')
-	append_items(tabs[8].items, mons_util.log_racejobinstincts())
+	if (tab == 'monstrosity') then
+		tabs[8].items = {}
+		table.insert(tabs[8].items, '- Species Levels')
+		append_items(tabs[8].items, mons_util.log_monsterlevels())
+		table.insert(tabs[8].items, '- Monster Variants')
+		append_items(tabs[8].items, mons_util.log_variants())
+		table.insert(tabs[8].items, '- Race / Job Instincts')
+		append_items(tabs[8].items, mons_util.log_racejobinstincts())
+	end
 	
-	-- log Monstrosity levels & Race/Job Instincts
+	-- log Titles
 	append_items(tabs[9].items, titles_util.log_titles())
 	
 	-- log RoE
-	append_items(tabs[10].items, roe_util.log_roe())
+	if (tab == 'roe') then
+		tabs[10].items = {} 
+		append_items(tabs[10].items, roe_util.log_roe())
+	end
 	
 end
-
 
 -------------------------------------------------
 -- STUFF HERE
@@ -442,10 +438,11 @@ local playerkeyitems = windower.ffxi.get_key_items()
 
 function check_keyitems(keyitemtype)
 	local keyitem_list = {}
+	local keyitem_exclusions = require('maps/keyitems_exclusions')
 	totalkeyitems = 0
 	obtainedkeyitems = 0
 	for id, value in pairs(res.key_items) do
-		if (value.category == keyitemtype) then
+		if (value.category == keyitemtype and (not keyitem_exclusions:contains(id)) ) then
 			if table.find(playerkeyitems, id) then
 				-- key item obtained
 				obtainedkeyitems = obtainedkeyitems + 1
@@ -466,10 +463,11 @@ local playerspells = windower.ffxi.get_spells()
 
 function check_playerspells(spelltype)
 	local spells_list = {}
+	local spells_exclusions = require('maps/spells_exclusions')
 	totalplayerspells = 0
 	learnedspells = 0
 	for id, value in pairs(res.spells) do
-		if ((value.type == spelltype) and (not value.unlearnable)) then
+		if ((value.type == spelltype) and (not value.unlearnable) and (not spells_exclusions[id])) then
 			if (playerspells[id] == true) then
 				-- spell learned
 				learnedspells = learnedspells + 1
@@ -691,7 +689,6 @@ windower.register_event('mouse', function(type, x, y, delta, blocked)
 	
 end)
 
-
 windower.register_event('addon command', function(...)
     if arg[1] == 'eval' then
         assert(loadstring(table.concat(arg, ' ',2)))()
@@ -707,10 +704,8 @@ windower.register_event('addon command', function(...)
 		
 		--update_maintab()
 		windower.add_to_chat(100, "test")
-		roe_util.log_roehidden()
     end
 end)
-
 
 -------------------------------------------------
 -- CLEANUP

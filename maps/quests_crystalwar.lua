@@ -93,5 +93,5 @@ return {
 	[95] = 'Provenance',
 	[96] = 'Crystal Guardian',
 	[97] = 'Endings And Beginnings',
-	[98] = 'Ad Infinitum'
+	--[98] = 'Ad Infinitum' -- non completable
 }
