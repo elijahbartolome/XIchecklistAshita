@@ -6,7 +6,8 @@
 
 `//xic test` to print some hidden/unknown RoE
 
-to update titles you must speak to all [Titles NPCs](https://www.bg-wiki.com/ffxi/Category:Title_NPC)
+to update Titles you must speak to all [Titles NPCs](https://www.bg-wiki.com/ffxi/Category:Title_NPC)
+to update Outpost Warps you must speak to any [Nation Teleporter](https://www.bg-wiki.com/ffxi/Outpost#Nation_Teleporters)
 
 ## **Tracking**:
 
@@ -64,3 +65,4 @@ the menu will only show missing items like quests,key items, spells, home points
 - 0.4.1 - removed non-implemented monstrosity
 - 0.5.0 - added title obtain method, for quick reference in missing titles
 - 0.5.2 - fixed unlearnable spells & waypoint mapping
+- 0.6.0 - added Outpost warps / Monster Instincts + fixes/cleanup
