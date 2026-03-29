@@ -7,12 +7,14 @@
 `//xic test` to print some hidden/unknown RoE
 
 to update Titles you must speak to all [Titles NPCs](https://www.bg-wiki.com/ffxi/Category:Title_NPC)
+
 to update Outpost Warps you must speak to any [Nation Teleporter](https://www.bg-wiki.com/ffxi/Outpost#Nation_Teleporters)
 
 ## **Tracking**:
 
 - Monstrosity (Monster levels / Race & Job Instincts / Monster variants)
 - Titles
+- Outpost Warps
 - Records of Eminence (RoE) 
 - Warps (Home Points / Survival Guides / Waypoints)
 - Campaign Ops
