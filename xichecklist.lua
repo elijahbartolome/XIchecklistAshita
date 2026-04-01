@@ -1,6 +1,6 @@
 _addon.name     = 'xichecklist'
 _addon.author   = 'Anokata'
-_addon.version  = '0.6.0'
+_addon.version  = '0.7.0'
 _addon.commands = {'xichecklist', 'xic'}
 
 require('sets')
@@ -55,6 +55,8 @@ playertracker = {
 	['Mounts_total'] = 0,
 	['Claim_Slips_completed'] = 0,
 	['Claim_Slips_total'] = 0,
+	['Active_Effects_completed'] = 0,
+	['Active_Effects_total'] = 0,
 	
 	['WhiteMagic_completed'] = 0,
 	['WhiteMagic_total'] = 0,
@@ -99,9 +101,14 @@ playertracker = {
 	['RoE_completed'] = 0,
 	['RoE_total'] = 0,
 	
-	
 	['outposts_completed'] = 0,
 	['outposts_total'] = 0,
+	
+	['mmmvouchers_completed'] = 0,
+	['mmmvouchers_total'] = 0,
+	['mmmrunes_completed'] = 0,
+	['mmmrunes_total'] = 0,
+	['mmm_mazecount'] = 0,
 	
 	
 	outposts_unlocks = {},
@@ -115,7 +122,7 @@ playerroe = {}
 playerroe = config.load('data/'.. windower.ffxi.get_player().name .. '_roe.xml', playerroe)
 
 -------------------------------------------------
--- CONSTANTS
+-- UI CONSTANTS
 -------------------------------------------------
 local FONT_SIZE    = 12
 local LINE_HEIGHT  = 16
@@ -124,7 +131,7 @@ local CHAR_WIDTH   = 8
 local VISIBLE_ROWS = 15
 
 -------------------------------------------------
--- WINDOW STATE
+-- UI WINDOW STATE
 -------------------------------------------------
 local win_x = trackermenusettings.pos.x
 local win_y = trackermenusettings.pos.y
@@ -142,7 +149,7 @@ local scroll     = 0
 local selected   = 1
 
 -------------------------------------------------
--- DATA
+-- UI DATA
 -------------------------------------------------
 tabs = {
     {
@@ -185,6 +192,10 @@ tabs = {
         name = 'RoE',
         items = {}
     },
+	{
+        name = 'MMM',
+        items = {}
+    },
 }
 
 -------------------------------------------------
@@ -197,6 +208,7 @@ warps_util = require('util/warps')
 mons_util = require('util/monstrosity')
 titles_util = require('util/titles')
 roe_util = require('util/roe')
+mmm_util = require('util/mmm')
 menus_util = require('util/menus')
 
 local cmds = {
@@ -250,7 +262,8 @@ function update_maintab()
 	append_maintab('Magical Maps %d/%d', playertracker['Magical_Maps_completed'], playertracker['Magical_Maps_total'])
 	append_maintab('Mounts %d/%d', playertracker['Mounts_completed'], playertracker['Mounts_total'])
 	append_maintab('Claim Slips %d/%d', playertracker['Claim_Slips_completed'], playertracker['Claim_Slips_total'])
-
+	append_maintab('Active Effects %d/%d', playertracker['Active_Effects_completed'], playertracker['Active_Effects_total'])
+	
 	table.insert(tabs[1].items, '======= Magic =======')
 	append_maintab('White Magic %d/%d', playertracker['WhiteMagic_completed'], playertracker['WhiteMagic_total'])
 	append_maintab('Black Magic %d/%d', playertracker['BlackMagic_completed'], playertracker['BlackMagic_total'])
@@ -277,6 +290,11 @@ function update_maintab()
 	append_maintab('Monster Variants %d/%d', playertracker['MonsterVariants_completed'], playertracker['MonsterVariants_total'])
 	append_maintab('Monster Instincts %d/%d', playertracker['MonsterInsincts_completed'], playertracker['MonsterInsincts_total'])
 	
+	table.insert(tabs[1].items, '======= Moblin Maze Mongers =======')
+	append_maintab('Vouchers Unlocked %d/%d', playertracker['mmmvouchers_completed'], playertracker['mmmvouchers_total'])
+	append_maintab('Runes Unlocked %d/%d', playertracker['mmmrunes_completed'], playertracker['mmmrunes_total'])
+	--append_maintab('Maze count %d', playertracker['mmm_mazecount'])
+	
 	table.insert(tabs[1].items, '======= Titles =======')
 	append_maintab('Titles %d/%d', playertracker['Titles_completed'], playertracker['Titles_total'])
 	append_items(tabs[1].items, titles_util.list_titles_bycontent())
@@ -284,10 +302,10 @@ function update_maintab()
 end
 
 windower.register_event('incoming chunk', function(id, data, modified, injected, blocked)
+	-- do quests
 	if id == 0x056 then
 		local p = packets.parse('incoming', data)
 		local log = quest_logs[p.Type]
-		-- do quests
 		if log then
 			if ((p.Type == 128)) then -- if Aht Urhgan Current Quests
 				quests[log.type][log.area] = p["Current TOAU Quests"]
@@ -297,7 +315,6 @@ windower.register_event('incoming chunk', function(id, data, modified, injected,
 				quests[log.type][log.area] = p['Quest Flags']
 			end
 		end
-		
 		xichecklist_updatetabs('quests')
     end
 	
@@ -305,11 +322,8 @@ windower.register_event('incoming chunk', function(id, data, modified, injected,
 		local parseddata = packets.parse('incoming', data)
 		-- do warps
 		if (parseddata.Order == 6) then 
-			tabs[7].items = {}
-			append_items(tabs[7].items, warps_util.checkwarps('homepoints', data))
-			append_items(tabs[7].items, warps_util.checkwarps('survivalguides', data))
-			append_items(tabs[7].items, warps_util.checkwarps('waypoints', data))
-			append_items(tabs[7].items, warps_util.log_outposts())
+			warps_util.warps_data = data
+			xichecklist_updatetabs('warps')
 		end
 		-- do monstrosity
 		if (parseddata.Order == 3) then
@@ -334,8 +348,8 @@ windower.register_event('incoming chunk', function(id, data, modified, injected,
 		titles_util.add_title(parseddata['Title'])
 	end
 	
+	-- handle npc menu
 	if id == 0x034 then
-		-- handle npc menu (currently only OP warps)
 		menus_util.handle_npc_menu(data)
 	end
 	
@@ -349,8 +363,14 @@ windower.register_event('incoming chunk', function(id, data, modified, injected,
 			xichecklist_updatetabs('roe')
 		end
 	end
-	--]]
-	--xichecklist_updatetabs()
+	
+	-- do MMM
+	if id == 0x0AD then
+		local parseddata = packets.parse('incoming', data)
+		mmm_util.handle_mmm_data(data)
+		xichecklist_updatetabs('mmm')
+	end
+	
 	update_maintab()
 	
 end)
@@ -358,15 +378,10 @@ end)
 function xichecklist_updatetabs(tab)
 	
 	--tabs[1].items = {} -- reset main menu content
-	--tabs[2].items = {} -- reset main menu content
-	--tabs[3].items = {} -- reset main menu content
-	--tabs[4].items = {} -- reset main menu content
 	tabs[5].items = {} -- reset main menu content
 	tabs[6].items = {} -- reset main menu content
 	
-	--tabs[8].items = {} -- reset main menu content
 	tabs[9].items = {} -- reset main menu content
-	--tabs[10].items = {} -- reset main menu content
 	
 	-- log quests
 	if (tab == 'quests') then
@@ -395,6 +410,7 @@ function xichecklist_updatetabs(tab)
 	append_items(tabs[5].items, check_keyitems('Magical Maps'))
 	append_items(tabs[5].items, check_keyitems('Mounts'))
 	append_items(tabs[5].items, check_keyitems('Claim Slips'))
+	append_items(tabs[5].items, check_keyitems('Active Effects'))
 	
 	-- log spells and trusts
 	tabs[6].items = check_playerspells('WhiteMagic')
@@ -405,7 +421,16 @@ function xichecklist_updatetabs(tab)
 	append_items(tabs[6].items, check_playerspells('BlueMagic'))
 	append_items(tabs[6].items, check_playerspells('Geomancy'))
 	append_items(tabs[6].items, check_playerspells('Trust'))
-		
+	
+	-- log warps
+	if (tab == 'warps') then
+		tabs[7].items = {}
+		append_items(tabs[7].items, warps_util.checkwarps('homepoints'))
+		append_items(tabs[7].items, warps_util.checkwarps('survivalguides'))
+		append_items(tabs[7].items, warps_util.checkwarps('waypoints'))
+		append_items(tabs[7].items, warps_util.log_outposts())
+	end
+	
 	-- Log Job Points Spent
 	check_jobpoints()
 	
@@ -429,6 +454,15 @@ function xichecklist_updatetabs(tab)
 	if (tab == 'roe') then
 		tabs[10].items = {} 
 		append_items(tabs[10].items, roe_util.log_roe())
+	end
+	
+	-- log RoE
+	if (tab == 'mmm') then
+		tabs[11].items = {} 
+		table.insert(tabs[11].items, '==== Vouchers Unlocks ====')
+		append_items(tabs[11].items, mmm_util.log_vouchers())
+		table.insert(tabs[11].items, '==== Runes Unlocks ====')
+		append_items(tabs[11].items, mmm_util.log_runes())
 	end
 	
 end
@@ -511,7 +545,7 @@ function check_jobpoints()
 end
 
 -------------------------------------------------
--- TEXT OBJECT
+-- UI TEXT OBJECT
 -------------------------------------------------
 local ui = texts.new('', {
     pos = { x = win_x, y = win_y },
@@ -530,7 +564,7 @@ local ui = texts.new('', {
 ui:show()
 
 -------------------------------------------------
--- HELPERS
+-- UI HELPERS
 -------------------------------------------------
 local function inside(mx, my, x, y, w, h)
     return mx >= x and mx <= x + w
@@ -547,23 +581,20 @@ local function clamp_scroll(count)
 end
 
 -------------------------------------------------
--- LAYOUT CALC
+-- UI LAYOUT CALC
 -------------------------------------------------
 
 
 -------------------------------------------------
--- DRAW
+-- UI DRAW
 -------------------------------------------------
 local function draw()
     local text = ''
-
     -- Tabs
     for i, tab in ipairs(tabs) do
         text = text .. (i == active_tab and '['..tab.name..'] ' or ' '..tab.name..'  ')
     end
-
     text = text .. '\n────────────\n'
-
     -- List
     local items = tabs[active_tab].items
 	local count = #items
@@ -576,14 +607,10 @@ local function draw()
         local idx = i + scroll
         if items[idx] then
             text = text .. (idx == selected and '\\cs(255,0,0)> ' or '  ') .. items[idx] .. '\\cr\n'
-			--text = text .. 'test\n'
         end
     end
-
     ui:text(text)
     ui:pos(win_x, win_y)
-	
-	
 end
 
 draw()
@@ -603,12 +630,10 @@ windower.register_event('mouse', function(type, x, y, delta, blocked)
     if type == 1 then
         local tx = px + PADDING
         local ty = py + PADDING
-		
         for i, tab in ipairs(tabs) do
             local label =
                 (i == active_tab and '['..tab.name..'] ' or ' '..tab.name..'  ')
             local w = #label * CHAR_WIDTH + i*2
-
             if inside(x, y, tx, ty, w, LINE_HEIGHT) then
                 active_tab = i
                 selected = 1
@@ -616,7 +641,6 @@ windower.register_event('mouse', function(type, x, y, delta, blocked)
                 draw()
                 return true
             end
-			
             tx = tx + w
         end
     end
@@ -630,9 +654,7 @@ windower.register_event('mouse', function(type, x, y, delta, blocked)
         drag_dy = y - py
         return true
     end
-
     if type == 0 then dragging = false end
-
     if dragging and type == 1 then
         win_x = x - drag_dx
         win_y = y - drag_dy
@@ -685,8 +707,6 @@ windower.register_event('mouse', function(type, x, y, delta, blocked)
         --end
     end
 	
-	
-	
 end)
 
 windower.register_event('addon command', function(...)
@@ -701,7 +721,6 @@ windower.register_event('addon command', function(...)
 	elseif cmds.hide:contains(arg[1]) then
 		ui:hide()
 	elseif cmds.test:contains(arg[1]) then
-		
 		--update_maintab()
 		windower.add_to_chat(100, "test")
     end
