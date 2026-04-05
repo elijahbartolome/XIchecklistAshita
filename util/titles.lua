@@ -69,10 +69,10 @@ function titles_util.list_titles_bycontent()
 		local completion = false
 		for key, titleid in pairs(titles) do
 			total = total+1
-			if (titlesexclusions:contains(key)) then total = total-1 end
+			if (titlesexclusions:contains(titleid)) then total = total-1 end
 			if (playertitles[tostring(titleid)] == true) then
 				complete = complete+1
-				if (titlesexclusions:contains(key)) then total = total+1 end
+				if (titlesexclusions:contains(titleid)) then total = total+1 end
 			end
 		end
 		local red = 0

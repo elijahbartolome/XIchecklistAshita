@@ -47,4 +47,16 @@ function util.list_item(category, text, completed)
 	return item
 end
 
+function util.totalpoints()
+	local completed, total = 0,0
+	for key, value in pairs(playertracker) do
+		if (key:sub(-10) == "_completed" and type(value) == "number") then
+			completed = completed + value
+		elseif (key:sub(-6) == "_total" and type(value) == "number") then
+			total = total + value
+		end
+	end
+	return (completed - playertracker['Jobpoints_completed']), (total - playertracker['Jobpoints_total'])
+end
+
 return util

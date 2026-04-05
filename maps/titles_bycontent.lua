@@ -152,11 +152,11 @@ return {
 	},
 	['Master Trials'] = {
 		1010, -- Preventer of the Second Coming
-		1074, -- Paradise Regained
-		1034, -- Every Ilm a Heroine
-		1075, -- Founder's Pride
-		1012, -- The Triumphant
 		1011, -- Lux Ex Tenebris
+		1012, -- The Triumphant
+		1034, -- Every Ilm a Heroine
+		1074, -- Paradise Regained
+		1075, -- Founder's Pride
 		1076, -- Master of All
 	},
 	['Walk of Echoes'] = {

@@ -1,6 +1,6 @@
 _addon.name     = 'xichecklist'
 _addon.author   = 'Anokata'
-_addon.version  = '0.9.0'
+_addon.version  = '0.9.1'
 _addon.commands = {'xichecklist', 'xic'}
 
 require('sets')
@@ -77,8 +77,11 @@ playertracker = {
 	['Trust_total'] = 0,
 	
 	['Meritpoints_completed'] = 0,
+	['Meritpoints_total'] = 919,
 	['Jobpoints_completed'] = 0,
+	['Jobpoints_total'] = 46200,
 	['Masterlevels_completed'] = 0,
+	['Masterlevels_total'] = 1100,
 	['Masterlevels_highest'] = 0,
 	
 	['homepoints_completed'] = 0,
@@ -147,9 +150,6 @@ local VISIBLE_ROWS = 15
 -------------------------------------------------
 -- UI WINDOW STATE
 -------------------------------------------------
---local win_x = trackermenusettings.pos.x
---local win_y = trackermenusettings.pos.y
---local win_w = 280
 local dragging = false
 local drag_dx  = 0
 local drag_dy  = 0
@@ -240,7 +240,6 @@ local function append_items(dst, src)
         return
     end
     for _, item in ipairs(src) do
-		
 		local text = item.text
 		local display = true
 		local menucolor = '(255,255,0)'
@@ -253,9 +252,7 @@ local function append_items(dst, src)
 		if item.completed == true then
 			menucolor = '(0,255,0)'
 		end
-		
 		local text = '\\cs' .. menucolor .. text ..'\\cr'
-		
 		if (display == true) then
 			table.insert(dst, text)
 		end
@@ -273,6 +270,7 @@ function update_maintab()
 	
 	tabs[1].items = {}
 	
+	append_maintab('Total Points %d/%d', util.totalpoints())
 	table.insert(tabs[1].items, '======= RoE =======')
 	append_maintab('RoE %d/%d', playertracker['RoE_completed'], playertracker['RoE_total'])
 	
@@ -310,7 +308,7 @@ function update_maintab()
 	append_maintab('Trusts %d/%d', playertracker['Trust_completed'], playertracker['Trust_total'])
 
 	table.insert(tabs[1].items, '======= EXP =======')
-	append_maintab('Merit Points %d/%d', playertracker['Meritpoints_completed'], 909)
+	append_maintab('Merit Points %d/%d', playertracker['Meritpoints_completed'], 919)
 	append_maintab('Job Points %d/%d', playertracker['Jobpoints_completed'], 46200)
 	append_maintab('Master Levels %d/%d (Highest: %d)', playertracker['Masterlevels_completed'], 1100, playertracker['Masterlevels_highest'])
 	

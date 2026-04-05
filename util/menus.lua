@@ -18,14 +18,14 @@ function menus_util.handle_npc_menu(data)
 		return
 	end
 	if (
-	(
-		(menus_util.menu_npcs[npc].zoneid == windower.ffxi.get_info().zone)
-		or (menus_util.menu_npcs[npc].zoneid:contains(windower.ffxi.get_info().zone))
-	) and 
-	(
-		(menus_util.menu_npcs[npc].menuid == parseddata['Menu ID']) 
-		or (menus_util.menu_npcs[npc].menuid:contains(parseddata['Menu ID']))
-	)
+		(
+			(menus_util.menu_npcs[npc].zoneid == windower.ffxi.get_info().zone) or
+			(menus_util.menu_npcs[npc].zoneid:contains(windower.ffxi.get_info().zone))
+		)
+		and (
+			(menus_util.menu_npcs[npc].menuid == parseddata['Menu ID']) or
+			(menus_util.menu_npcs[npc].menuid:contains(parseddata['Menu ID']))
+		)
 	) then
 		menus_util.menu_npcs[npc]['menu_function'](data)
 	end
@@ -251,20 +251,20 @@ end
 
 menus_util.menu_npcs = {
 	-- Outpost Warp NPCs
-	['Conrad'] = {entityid=17735859, zoneid=234, menuid=584, menu_function=menus_util.handle_op_warps}, -- Bastok Mines
-	['Jeanvirgaud'] = {entityid=17723597, zoneid=231, menuid=864, menu_function=menus_util.handle_op_warps}, -- Northern San d'Oria
-	['Rottata'] = {entityid=17760439, zoneid=240, menuid=653, menu_function=menus_util.handle_op_warps}, -- Port Windurst
+	['Conrad'] = {entityid=17735859, zoneid=S{234}, menuid=S{584,581}, menu_function=menus_util.handle_op_warps}, -- Bastok Mines
+	['Jeanvirgaud'] = {entityid=17723597, zoneid=S{231}, menuid=S{716,864}, menu_function=menus_util.handle_op_warps}, -- Northern San d'Oria
+	['Rottata'] = {entityid=17760439, zoneid=S{240}, menuid=S{653,552}, menu_function=menus_util.handle_op_warps}, -- Port Windurst
 	-- MMM NPC
-	['Chatnachoq'] = {entityid=17780943, zoneid=245, menuid=10095, menu_function=menus_util.handle_chatnachoq}, -- Lower Jeuno
+	['Chatnachoq'] = {entityid=17780943, zoneid=S{245}, menuid=S{10095}, menu_function=menus_util.handle_chatnachoq}, -- Lower Jeuno
 	-- Proto-Waypoint NPCs
 	['Proto-Waypoint'] = {entityid=S{17772844,17793139,17797259,17789018,17809536}, zoneid=S{243,248,249,247,252}, menuid=S{10209,10012,345,141,266}, menu_function=menus_util.handle_protowaypoint}, -- Ru'Lude Gardens / Selbine / Mhaura / Rabao / Norg
 	
 	-- Meenle Burrow
-	['Burrow Investigator'] = {entityid=17776876, zoneid=244, menuid=5500, menu_function=menus_util.handle_burrowsnpc}, -- Upper Jeuno
-	['Burrow Researcher'] = {entityid=S{17269250,17207946}, zoneid=S{120,105}, menuid=5500, menu_function=menus_util.handle_burrowsnpc}, -- Sauromugue Champaign
+	['Burrow Investigator'] = {entityid=17776876, zoneid=S{244}, menuid=S{5500}, menu_function=menus_util.handle_burrowsnpc}, -- Upper Jeuno
+	['Burrow Researcher'] = {entityid=S{17269250,17207946}, zoneid=S{120,105}, menuid=S{5500}, menu_function=menus_util.handle_burrowsnpc}, -- Sauromugue Champaign
 	
 	-- Fishing NPC
-	['Katsunaga'] = {entityid=17797157, zoneid=249, menuid=197, menu_function=menus_util.handle_katsunaga}, -- Upper Jeuno
+	['Katsunaga'] = {entityid=17797157, zoneid=S{249}, menuid=S{197}, menu_function=menus_util.handle_katsunaga}, -- Upper Jeuno
 	
 }
 
