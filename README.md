@@ -31,7 +31,7 @@ to update Meeble Burrows you must speak to any [Burrow Researcher](https://www.b
 - Quests (San d'Oria / Bastok / Windurst / Jeuno / Aht Urhgan / Crystal War / Outlands / Other / Abyssea / Adoulin / Coalition)
 - Key items (Permenant / Maps / Mounts / Claim Slips / Job KIs)
 - Magic Spells (White Magic / Black Magic / Summoner Pacts / Ninjutsu / Bard Songs / Blue Magic / Trusts)
-- EXP related (Job points / Master levels)
+- EXP related (Merit / Job points / Master levels)
 
 
 
