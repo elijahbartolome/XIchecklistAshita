@@ -14,9 +14,9 @@ to update MMM Maze Count you must speak to [Chatnachoq](https://www.bg-wiki.com/
 
 to update Proto-Waypoint you must speak to any [Proto-Waypoints](https://www.bg-wiki.com/ffxi/Waypoint#Proto-Waypoints)
 
-to update Fishes Caught you must speak to Fish Tracker NPC (Open the menu) [Katsunaga](https://www.bg-wiki.com/ffxi/Katsunaga)
+to update Fishes Caught you must speak to Fish Tracker NPC [Katsunaga](https://www.bg-wiki.com/ffxi/Katsunaga) (Menu: Types of fish caught)
 
-to update Meeble Burrows you must speak to any [Burrow Researcher](https://www.bg-wiki.com/ffxi/Burrow_Researcher) or [Burrow Investigator](https://www.bg-wiki.com/ffxi/Burrow_Investigator) (Open the Area menu)
+to update Meeble Burrows you must speak to any [Burrow Researcher](https://www.bg-wiki.com/ffxi/Burrow_Researcher) or [Burrow Investigator](https://www.bg-wiki.com/ffxi/Burrow_Investigator) (Menu: Review expedition specifics -> Zone)
 
 ## **Tracking**:
 
