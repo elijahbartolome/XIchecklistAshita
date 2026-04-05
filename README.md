@@ -22,12 +22,14 @@ to update Meeble Burrows you must speak to any [Burrow Researcher](https://www.b
 - Monstrosity (Monster levels / Race & Job Instincts / Monster variants)
 - Titles
 - Moblin Maze Mongers (Vouchers / Runes / Maze Count)
+- Meeble Burrows
+- Types of fish caught
 - Outpost Warps
 - Records of Eminence (RoE) 
 - Warps (Home Points / Survival Guides / Waypoints / Proto-Waypoints)
 - Campaign Ops
 - Quests (San d'Oria / Bastok / Windurst / Jeuno / Aht Urhgan / Crystal War / Outlands / Other / Abyssea / Adoulin / Coalition)
-- Key items (Permenant / Maps / Mounts / Claim Slips)
+- Key items (Permenant / Maps / Mounts / Claim Slips / Job KIs)
 - Magic Spells (White Magic / Black Magic / Summoner Pacts / Ninjutsu / Bard Songs / Blue Magic / Trusts)
 - EXP related (Job points / Master levels)
 
