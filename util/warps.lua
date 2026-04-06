@@ -1,8 +1,5 @@
 local warps_util = {}
 local warps_data = nil
-local totalhomepoint, obtainedhomepoints = 0, 0
-local totalsurvivalguides, obtainedsurvivalguides = 0, 0
-local totalwaypoints, obtainedwaypoints = 0, 0
 
 local warps = {
 	homepoints = {data = {0x08+1, 0x17+1}, map = require('../maps/warps_homepoints')},

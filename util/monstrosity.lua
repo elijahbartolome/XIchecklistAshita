@@ -3,6 +3,10 @@ local map_species = require('../maps/monstrosity_species')
 local map_species_variants = require('../maps/monstrosity_species_variants')
 local map_racejobinstincts = require('../maps/monstrosity_racejobinstincts')
 local map_monsterinstincts = require('../maps/monstrosity_instincts')
+mons_util.monster_levelspacket = {
+	[1] = nil,
+	[2] = nil,
+}
 local monster_levels = nil
 local racejobinstincts = nil
 local variants_bitfield = nil
@@ -30,6 +34,11 @@ function mons_util.log_racejobinstincts()
 end
 
 function mons_util.log_monsterlevels()
+	if (mons_util.monster_levelspacket[1] == nil or mons_util.monster_levelspacket[2] == nil) then 
+		return
+	else 
+		mons_util.monster_levels = util.char_field_to_table(mons_util.monster_levelspacket[1] .. mons_util.monster_levelspacket[2])
+	end
 	if mons_util.monster_levels==nil then return end
 	local output_list = {}
 	local total, complete = 0, 0
@@ -69,11 +78,12 @@ function mons_util.log_monsterinstincts()
 	--local instincts_unlocks = util.twobits_to_table(mons_util.monster_instincts)
 	local total, obtained = 0, 0
 	for table_id, unlocked_level in pairs(mons_util.monster_instincts) do
-		total = total+3
+		--total = total+3
 		local instinct_index_base = 3 * (table_id - 1)
 		for instinct_index=1, 3 do
 			local completion = false
 			if (map_monsterinstincts[instinct_index_base+instinct_index]) then
+				total = total+1
 				if (unlocked_level >= instinct_index) then
 					obtained = obtained+1
 					completion = true

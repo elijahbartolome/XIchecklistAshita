@@ -107,14 +107,15 @@ return {
 	[94] = "Valley of Sorrows",
 	[95] = "Ifrit's Cauldron",
 	
-	--[96] = "Unknown Survival Guide",
-	--[97] = "Unknown Survival Guide",
+	[96] = "Zeruhn Mines",
+	[97] = "Eastern Adoulin",
 	--[98] = "Unknown Survival Guide",
 	--[99] = "Unknown Survival Guide",
 	--[100] = "Unknown Survival Guide",
 	--[101] = "Unknown Survival Guide",
-	[102] = "Zeruhn Mines",
-	[103] = "Eastern Adoulin",
+	--[102] = "Unknown Survival Guide",
+	--[103] = "Unknown Survival Guide",
+	
 
 	--[104] = "Unknown Survival Guide",
 	--[105] = "Unknown Survival Guide",

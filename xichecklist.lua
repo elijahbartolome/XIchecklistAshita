@@ -1,6 +1,6 @@
 _addon.name     = 'xichecklist'
 _addon.author   = 'Anokata'
-_addon.version  = '0.9.1'
+_addon.version  = '0.9.2'
 _addon.commands = {'xichecklist', 'xic'}
 
 require('sets')
@@ -15,14 +15,16 @@ res = require('resources')
 
 trackermenusettings = {}
 trackermenusettings.pos = {}
-trackermenusettings.pos.x = 120
-trackermenusettings.pos.y = 120
+trackermenusettings.pos.x = 50
+trackermenusettings.pos.y = 80
 trackermenusettings.visibility = true
 trackermenusettings.showcompleted = false
 
 trackermenusettings = config.load(trackermenusettings)
 
 playertracker = {
+	['mastery_rank'] = 0,
+	
 	['bastok_completed'] = 0,
 	['bastok_total'] = 0,
 	['sandoria_completed'] = 0,
@@ -232,6 +234,7 @@ local cmds = {
 	help = S{'help','h'},
 	hide = S{'hide'},
 	show = S{'show'},
+	copy = S{'copy'},
 	test = S{'test'},
 }
 
@@ -270,6 +273,7 @@ function update_maintab()
 	
 	tabs[1].items = {}
 	
+	append_maintab('Mastery Rank: %d', playertracker['mastery_rank'])
 	append_maintab('Total Points %d/%d', util.totalpoints())
 	table.insert(tabs[1].items, '======= RoE =======')
 	append_maintab('RoE %d/%d', playertracker['RoE_completed'], playertracker['RoE_total'])
@@ -336,7 +340,6 @@ function update_maintab()
 	table.insert(tabs[1].items, '======= Meeble Burrows =======')
 	append_maintab('Meeble Burrows Goal #3 %d/%d', playertracker['meebleburrows_completed'], playertracker['meebleburrows_total'])
 	
-	
 	table.insert(tabs[1].items, '======= Titles =======')
 	append_maintab('Titles %d/%d', playertracker['Titles_completed'], playertracker['Titles_total'])
 	append_items(tabs[1].items, titles_util.list_titles_bycontent())
@@ -344,6 +347,12 @@ function update_maintab()
 end
 
 windower.register_event('incoming chunk', function(id, data, modified, injected, blocked)
+	
+	if id == 0x01B then
+		local parseddata = packets.parse('incoming', data)
+		playertracker['mastery_rank'] = parseddata['Mastery Rank']
+	end
+	
 	-- do quests
 	if id == 0x056 then
 		local p = packets.parse('incoming', data)
@@ -369,11 +378,13 @@ windower.register_event('incoming chunk', function(id, data, modified, injected,
 		end
 		-- do monstrosity
 		if (parseddata.Order == 3) then
-			mons_util.monster_levels = util.char_field_to_table(parseddata['Monster Level Char field'])
+			mons_util.monster_levelspacket[1] = parseddata['Monster Level Char field']
+			--mons_util.monster_levels = util.char_field_to_table(parseddata['Monster Level Char field'])
 			mons_util.monster_instincts = util.twobits_to_table(parseddata['Instinct Bitfield 1'])
 			xichecklist_updatetabs('monstrosity')
 		end
 		if (parseddata.Order == 4) then
+			mons_util.monster_levelspacket[2] = data:sub(0x08+1, 0x87+1)
 			mons_util.racejobinstincts = parseddata['Instinct Bitfield 3']
 			mons_util.variants_bitfield = parseddata['Variants Bitfield']
 			xichecklist_updatetabs('monstrosity')
@@ -704,7 +715,6 @@ windower.register_event('mouse', function(type, x, y, delta, blocked)
 		trackermenusettings.pos.y = py
 		trackermenusettings:save()
 	end
-	
     -------------------------------------------------
     -- TAB CLICK
     -------------------------------------------------
@@ -724,7 +734,6 @@ windower.register_event('mouse', function(type, x, y, delta, blocked)
 			tab_x = tab_x + width
 		end
 	end
-
     -------------------------------------------------
     -- DRAG WINDOW
     -------------------------------------------------
@@ -780,20 +789,29 @@ windower.register_event('mouse', function(type, x, y, delta, blocked)
 			return true
 		--end
 	end
-	
 end)
 
 windower.register_event('addon command', function(...)
 	if arg[1] == 'eval' then
 		assert(loadstring(table.concat(arg, ' ',2)))()
 	elseif cmds.help:contains(arg[1]) then
-		windower.add_to_chat(2,"....XIchecklist / xic....")
-		windower.add_to_chat(2,"//xic [show|hide] to show / hide UI")
-		windower.add_to_chat(2,"Note: to update titles must talk to Title NPCs")
+		windower.add_to_chat(161,"==== xiChecklist / xic ====")
+		windower.add_to_chat(161,"//xic [show|hide] to show / hide UI")
+		windower.add_to_chat(161,"//xic copy to copy current tab to clipboard")
+		windower.add_to_chat(161,"==== ==== ==== ====")
+		--windower.add_to_chat(161,"Note: to update titles must talk to Title NPCs")
+		--windower.add_to_chat(161,"Note: to update Fish caught must talk to Katsunaga (Menu: Types of fish caught)")
+		--windower.add_to_chat(161,"Note: to update  Meeble Burrows must talk to Meeble Burrows you must speak to any Burrow Researcher or Burrow Investigator")
+		--windower.add_to_chat(161,"Note: to update Outpost Warps you must speak to any Nation Teleporter")
+		--windower.add_to_chat(161,"Note: MMM Maze Count you must speak to Chatnachoq")
+		--windower.add_to_chat(161,"Note: Proto-Waypoint you must speak to any Proto-Waypoints")
 	elseif cmds.show:contains(arg[1]) then
 		ui:show()
 	elseif cmds.hide:contains(arg[1]) then
 		ui:hide()
+	elseif cmds.copy:contains(arg[1]) then
+		windower.copy_to_clipboard(util.table_to_clipboard(tabs[active_tab].items))
+		windower.add_to_chat(100, "Copy to clipboard")
 	elseif cmds.test:contains(arg[1]) then
 		--update_maintab()
 		windower.add_to_chat(100, "test")

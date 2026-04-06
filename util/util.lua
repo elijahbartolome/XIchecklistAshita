@@ -59,4 +59,15 @@ function util.totalpoints()
 	return (completed - playertracker['Jobpoints_completed']), (total - playertracker['Jobpoints_total'])
 end
 
+function util.table_to_clipboard(tbl)
+	local result = ""
+    for i = 1, #tbl do
+		local text = tostring(tbl[i])
+		text = text:gsub("\\cs%(%d+,%d+,%d+%)", "")
+		text = text:gsub("\\cr", "")
+        result = result .. text .. "\n"
+    end
+    return result
+end
+
 return util
