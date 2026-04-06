@@ -4,6 +4,8 @@
 
 `//xic hide|show` to hide or show the UI.
 
+`//xic copy` to copy current tab to clipboard.
+
 
 to update Titles you must speak to all [Titles NPCs](https://www.bg-wiki.com/ffxi/Category:Title_NPC)
 
