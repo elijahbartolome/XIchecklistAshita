@@ -19,8 +19,8 @@ to update Fishes Caught you must speak to Fish Tracker NPC [Katsunaga](https://w
 
 to update Meeble Burrows you must speak to any [Burrow Researcher](https://www.bg-wiki.com/ffxi/Burrow_Researcher) or [Burrow Investigator](https://www.bg-wiki.com/ffxi/Burrow_Investigator) `(Menu: Review expedition specifics -> Zone)`
 
-<!-- to update Atmacite levels speak to any [Atmacite Refiner](https://www.bg-wiki.com/ffxi/Atmacite_Refiner) (Menu: Enrich Atmacite) -->
-<!-- to update Wing Skill speak to chocobo kids [Arvilauge/Gonija/Kiria-Romaria](https://www.bg-wiki.com/ffxi/Category:Chocobo_Digging#Basics) -->
+to update Atmacite levels speak to any [Atmacite Refiner](https://www.bg-wiki.com/ffxi/Atmacite_Refiner) (Menu: Enrich Atmacite)
+to update Wing Skill speak to chocobo kids [Arvilauge/Gonija/Kiria-Romaria](https://www.bg-wiki.com/ffxi/Category:Chocobo_Digging#Basics)
 
 ## **Tracking**:
 
@@ -36,7 +36,7 @@ to update Meeble Burrows you must speak to any [Burrow Researcher](https://www.b
 - Quests (San d'Oria / Bastok / Windurst / Jeuno / Aht Urhgan / Crystal War / Outlands / Other / Abyssea / Adoulin / Coalition)
 - Key items (Permenant / Maps / Mounts / Claim Slips / Job KIs)
 - Magic Spells (White Magic / Black Magic / Summoner Pacts / Ninjutsu / Bard Songs / Blue Magic / Trusts)
-- leveling related (Merit / Job points / Master levels / Fishing Skill / Crafting Skill <!-- / Wing Skill -->)
+- leveling related (Merit / Job points / Master levels / Fishing Skill / Crafting Skill / Wing Skill)
 
 
 
@@ -80,4 +80,4 @@ the menu will only show missing items like quests,key items, spells, home points
 - 0.9.0 - added Fishes Caught / Meeble Burrows / Merits , moved Coalitions under Quests
 - 0.9.2 - added Total Points / Mastery Rank / command to copy to clipboard
 - 0.9.3 - added fishing / crafting skills.
-<!-- - 0.9.4 - added Atmacite, Atmacite levels & Wing Skill.-->
+- 0.9.4 - added Atmacite, Atmacite levels & Wing Skill.
