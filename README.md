@@ -22,7 +22,9 @@ will be saved in config so only need to do it once (or when need to update)
 
 <br>
 
-By default anything completed is hidden from the UI, to show completed objectives (in green) edit the `settings.xml` and change the `showcompleted` to `true`
+**Note**:
+1. By default anything completed is hidden from the UI, to show completed objectives (in green) edit the `settings.xml` and change the `showcompleted` to `true`
+2. First load may freeze a few seconds due to first-time registering of RoEs.
 
 ## **Tracking**:
 
