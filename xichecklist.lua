@@ -1,6 +1,6 @@
 _addon.name     = 'xichecklist'
 _addon.author   = 'Anokata'
-_addon.version  = '0.9.7'
+_addon.version  = '0.9.8'
 _addon.commands = {'xichecklist', 'xic'}
 
 require('sets')
@@ -434,24 +434,19 @@ windower.register_event('incoming chunk', function(id, data, modified, injected,
 		end
 	end
 	
-	-- do titles
-	if id == 0x033 then
-		-- check title npc menu
+	-- handle npc menu
+	if (id == 0x033) or (id == 0x034) then
 		menus_util.handle_npc_menu(data)
+		xichecklist_updatemenulogs()
 	elseif id == 0x061 then
 		-- check player info (updated when openning menu)
 		local parseddata = packets.parse('incoming', data)
 		menus_util.add_title(parseddata['Title'])
-	end
-	
-	-- handle npc menu
-	if id == 0x034 then
-		menus_util.handle_npc_menu(data)
 		xichecklist_updatemenulogs()
 	end
 	
 	if id == 0x05C then
-		menus_util.handle_npc_submenu(data)
+		if menu_current.npcindex then menus_util.handle_npc_submenu(data) end
 		xichecklist_updatemenulogs()
 	end
 	
@@ -478,7 +473,7 @@ windower.register_event('incoming chunk', function(id, data, modified, injected,
 	
 	if id == 0x052 then
 		-- claer npc menu
-		--menus_util.reset_current_menu()
+		menus_util.reset_current_menu()
 	end
 	
 	update_maintab()

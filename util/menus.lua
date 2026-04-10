@@ -28,12 +28,13 @@ end
 
 function menus_util.handle_npc_submenu(data)
 	parseddata = packets.parse('incoming', data)
-	local index = menu_current.npcindex
+	local index = (menu_current.npcindex and menu_current.zoneid==windower.ffxi.get_info().zone) and menu_current.npcindex or parseddata['NPC Index']
+	if (index == nil) then return false end
 	local npc = index and windower.ffxi.get_mob_by_index(index).name
 	if not npc or not menus_util.menu_npcs[npc] then
 		return
 	end
-	if (((menus_util.menu_npcs[npc].zoneid == windower.ffxi.get_info().zone) or (menus_util.menu_npcs[npc].zoneid:contains(windower.ffxi.get_info().zone)))) then
+	if menus_util.menu_npcs[npc].zoneid:contains(windower.ffxi.get_info().zone) then
 		menus_util.menu_npcs[npc]['menu_function'](data)
 	end
 end
