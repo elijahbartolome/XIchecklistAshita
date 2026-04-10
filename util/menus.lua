@@ -1,5 +1,9 @@
 local menus_util = {}
 local menumaps = require('../maps/maps_menus')
+--local npcmaps = require('../maps/titles_npcs')
+local titlescontnt = require('../maps/titles_bycontent')
+local titlesexclusions = require('../maps/titles_exclusions')
+local titles_howtoobtain = require('../maps/titles_howtoobtain')
 menu_current = {
 	npcindex = nil,
 	zoneid = nil,
@@ -16,16 +20,8 @@ function menus_util.handle_npc_menu(data)
 	if not npc or not menus_util.menu_npcs[npc] then
 		return
 	end
-	if (
-		(
-			(menus_util.menu_npcs[npc].zoneid == windower.ffxi.get_info().zone) or
-			(menus_util.menu_npcs[npc].zoneid:contains(windower.ffxi.get_info().zone))
-		)
-		and (
-			(menus_util.menu_npcs[npc].menuid == parseddata['Menu ID']) or
-			(menus_util.menu_npcs[npc].menuid:contains(parseddata['Menu ID']))
-		)
-	) then
+	if (menus_util.menu_npcs[npc].zoneid:contains(windower.ffxi.get_info().zone)
+		and menus_util.menu_npcs[npc].menuid:contains(parseddata['Menu ID'])) then
 		menus_util.menu_npcs[npc]['menu_function'](data)
 	end
 end
@@ -69,7 +65,7 @@ function menus_util.handle_op_warps(data)
 	menu = parseddata['Menu Parameters']
 	subdata = menu:sub(0x1C+1, 0x1E+1)
 	for key, name in pairs(menumaps.outposts) do
-		if (not util.has_bit(subdata, key+5)) then -- used+5 because mapping starts from 6th byte
+		if (not util.has_bit(subdata, key+5)) then -- +5 because mapping starts from 6th byte
 			menus_util.add_outpost(key)
 		end
 	end
@@ -103,7 +99,6 @@ end
 function menus_util.handle_chatnachoq(data)
 	parseddata = packets.parse('incoming', data)
 	menu = parseddata['Menu Parameters']
-	local marbles = menu:unpack('I', 5)
 	local mazes = menu:unpack('I', 13)
 	playertracker['mmm_mazecount'] = mazes
 	playertracker:save()
@@ -281,7 +276,6 @@ function menus_util.log_atmacitelevels()
 		table.insert(output_list, util.list_item('atmacite', 'Lv. ('..level..'/15) ' .. atmacite.en, completion))
 	end
 	playertracker['atmacitelevels_completed'] = complete
-	--playertracker['atmacitelevels_total'] = total
 	return output_list
 end
 
@@ -296,6 +290,77 @@ function menus_util.handle_chocobostablenpc(data)
 		end
 	end
 end
+
+function menus_util.handle_titles_npc(data)
+	local flags = data:sub(81, 104)
+	local parseddata = packets.parse('incoming', data)
+	local index = parseddata['NPC Index']
+	local npc = index and windower.ffxi.get_mob_by_index(index).name
+	for cat, ids in ipairs(menumaps.titlesnpc_menu[npc]) do
+		local category = flags:unpack('I', 1 + (cat - 1) * 4)
+		for flag, id in ipairs(ids) do
+			if bit.band(category, bit.lshift(1, flag)) == 0 then
+				menus_util.add_title(id)
+			end
+		end
+	end
+end
+
+function menus_util.add_title(id)
+	if (not (playertitles[tostring(id)] == true)) then
+		playertitles[tostring(id)] = true
+		playertitles:save()
+		util.addon_log('Title added: ' .. res.titles[id].en)
+	end
+end
+
+function menus_util.log_titles()
+	output_list = {}
+	local total, complete = 0,0
+	for key, title in pairs(res.titles) do
+		total = total+1
+		local completion = false
+		local obtainmethod = ''
+		if (titles_howtoobtain[title.en]) then
+			obtainmethod = '\\cs(255,255,255) [' .. titles_howtoobtain[title.en] .. ']\\cr'
+		end
+		if (playertitles[tostring(key)] == true) then
+			complete = complete+1
+			completion = true
+		else
+			if (titlesexclusions:contains(key)) then
+				total = total - 1
+			end
+		end
+		if (not titlesexclusions:contains(key)) then  
+			table.insert(output_list, util.list_item(nil, res.titles[key].en .. obtainmethod, completion))
+		end
+	end
+	playertracker['Titles_completed'] = complete
+	playertracker['Titles_total'] = total
+	return output_list
+end
+
+function menus_util.list_titles_bycontent()
+	output_list = {}
+	for content, titles in pairs(titlescontnt) do
+		local total, complete = 0,0
+		local completion = false
+		for key, titleid in pairs(titles) do
+			total = total+1
+			if (titlesexclusions:contains(titleid)) then total = total-1 end
+			if (playertitles[tostring(titleid)] == true) then
+				complete = complete+1
+				if (titlesexclusions:contains(titleid)) then total = total+1 end
+			end
+		end
+		local red = 0
+		if (complete == total) then completion = true end
+		table.insert(output_list, util.list_item(nil, '--' .. content ..' titles %d/%d':format(complete, total), completion))
+	end
+	return output_list
+end
+
 
 menus_util.menu_npcs = {
 	-- Outpost Warp NPCs
@@ -325,6 +390,23 @@ menus_util.menu_npcs = {
 	['Gonija'] = {zoneid=S{234}, menuid=S{534}, menu_function=menus_util.handle_chocobostablenpc},
 	['Kiria-Romaria'] = {zoneid=S{241}, menuid=S{761}, menu_function=menus_util.handle_chocobostablenpc},
 	
+	-- Title Changer NPCs
+	["Aligi-Kufongi"] = {zoneid=S{26}, menuid=S{342}, menu_function=menus_util.handle_titles_npc},
+	["Koyol-Futenol"] = {zoneid=S{50}, menuid=S{644}, menu_function=menus_util.handle_titles_npc},
+	["Tamba-Namba"] = {zoneid=S{80}, menuid=S{306}, menu_function=menus_util.handle_titles_npc},
+	["Bhio Fehriata"] = {zoneid=S{87}, menuid=S{167}, menu_function=menus_util.handle_titles_npc},
+	["Cattah Pamjah"] = {zoneid=S{94}, menuid=S{138}, menu_function=menus_util.handle_titles_npc},
+	["Moozo-Koozo"] = {zoneid=S{230}, menuid=S{675}, menu_function=menus_util.handle_titles_npc},
+	["Styi Palneh"] = {zoneid=S{236}, menuid=S{200}, menu_function=menus_util.handle_titles_npc},
+	["Burute-Sorute"] = {zoneid=S{239}, menuid=S{10004}, menu_function=menus_util.handle_titles_npc},
+	["Tuh Almobankha"] = {zoneid=S{245}, menuid=S{10014}, menu_function=menus_util.handle_titles_npc},
+	["Zuah Lepahnyu"] = {zoneid=S{246}, menuid=S{330}, menu_function=menus_util.handle_titles_npc},
+	["Shupah Mujuuk"] = {zoneid=S{247}, menuid=S{1011}, menu_function=menus_util.handle_titles_npc},
+	["Yulon-Polon"] = {zoneid=S{248}, menuid=S{10001}, menu_function=menus_util.handle_titles_npc},
+	["Willah Maratahya"] = {zoneid=S{249}, menuid=S{10001}, menu_function=menus_util.handle_titles_npc},
+	["Eron-Tomaron"] = {zoneid=S{250}, menuid=S{10013}, menu_function=menus_util.handle_titles_npc},
+	["Quntsu-Nointsu"] = {zoneid=S{252}, menuid=S{1011}, menu_function=menus_util.handle_titles_npc},
+	["Debadle-Levadle"] = {zoneid=S{256}, menuid=S{15}, menu_function=menus_util.handle_titles_npc},
 }
 
 return menus_util

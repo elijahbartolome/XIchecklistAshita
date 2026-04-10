@@ -1,6 +1,6 @@
 _addon.name     = 'xichecklist'
 _addon.author   = 'Anokata'
-_addon.version  = '0.9.6'
+_addon.version  = '0.9.7'
 _addon.commands = {'xichecklist', 'xic'}
 
 require('sets')
@@ -183,7 +183,7 @@ tabs = {
         items = {}
     },
 	{
-        name = 'Spells',
+        name = 'Magic',
         items = {}
     },
 	{
@@ -223,29 +223,31 @@ defaulttab_logs = {
 		coalition = {},
 		campaign2 = {},
 	},
+	atmacite_levels = {},
 	homepoints = {},
 	survivalguides = {},
 	waypoints = {},
 	outposts = {},
 	protowaypoints = {},
-	
+	titles = {},
+	fishes = {},
 	monsterlevels = {},
 	monstervariants = {},
 	racejobinstincts = {},
 	monster_instincts = {},
 	
+	roe = {},
+	
 	mmmvouchers = {},
 	mmmrunes = {},
-	
+	meeble_burrows = {},
 	
 }
 
-			
 util = require('util/util')
 quest_util = require('util/quests')
 warps_util = require('util/warps')
 mons_util = require('util/monstrosity')
-titles_util = require('util/titles')
 roe_util = require('util/roe')
 mmm_util = require('util/mmm')
 menus_util = require('util/menus')
@@ -361,7 +363,7 @@ function update_maintab()
 	
 	table.insert(tabs[1].items, '======= Titles =======')
 	append_maintab('Titles %d/%d', playertracker['Titles_completed'], playertracker['Titles_total'])
-	append_items(tabs[1].items, titles_util.list_titles_bycontent())
+	append_items(tabs[1].items, menus_util.list_titles_bycontent())
 	
 end
 
@@ -411,8 +413,6 @@ windower.register_event('incoming chunk', function(id, data, modified, injected,
 			tab_logs.homepoints = warps_util.checkwarps('homepoints')
 			tab_logs.survivalguides = warps_util.checkwarps('survivalguides')
 			tab_logs.waypoints = warps_util.checkwarps('waypoints')
-			tab_logs.outposts = menus_util.log_outposts()
-			tab_logs.protowaypoints = menus_util.log_protowaypoints()
 			xichecklist_updatetabs('warps')
 		end
 		-- do monstrosity
@@ -437,20 +437,22 @@ windower.register_event('incoming chunk', function(id, data, modified, injected,
 	-- do titles
 	if id == 0x033 then
 		-- check title npc menu
-		titles_util.check_titles_npc(data)
+		menus_util.handle_npc_menu(data)
 	elseif id == 0x061 then
 		-- check player info (updated when openning menu)
 		local parseddata = packets.parse('incoming', data)
-		titles_util.add_title(parseddata['Title'])
+		menus_util.add_title(parseddata['Title'])
 	end
 	
 	-- handle npc menu
 	if id == 0x034 then
 		menus_util.handle_npc_menu(data)
+		xichecklist_updatemenulogs()
 	end
 	
 	if id == 0x05C then
 		menus_util.handle_npc_submenu(data)
+		xichecklist_updatemenulogs()
 	end
 	
 	-- do RoE
@@ -460,6 +462,7 @@ windower.register_event('incoming chunk', function(id, data, modified, injected,
 		roe_data = roe_data .. parseddata['RoE Quest Bitfield'] -- the packet will be repeated three times, gather the data first
 		if (parseddata.Order == 3) then
 			roe_util.handle_roe_data(data)
+			roe_data = nil -- reset
 			xichecklist_updatetabs('roe')
 		end
 	end
@@ -489,13 +492,21 @@ windower.register_event('outgoing chunk', function(id, data, modified, injected,
 	end
 end)
 
+function xichecklist_updatemenulogs()
+	tab_logs.outposts = menus_util.log_outposts()
+	tab_logs.protowaypoints = menus_util.log_protowaypoints()
+	tab_logs.fishes = menus_util.log_fishes()
+	tab_logs.atmacite_levels = menus_util.log_atmacitelevels()
+	tab_logs.meeble_burrows = menus_util.log_meeble_burrows()
+	tab_logs.titles = menus_util.log_titles()
+end
+
 function xichecklist_updatetabs(tab)
 	if not player then return false end
 	--tabs[1].items = {} -- reset main menu content
 	tabs[4].items = {}
 	tabs[5].items = {} -- reset main menu content
 	tabs[6].items = {} -- reset main menu content
-	
 	tabs[9].items = {} -- reset main menu content
 	
 	if (tab == 'quests') then
@@ -518,7 +529,7 @@ function xichecklist_updatetabs(tab)
 	end
 	
 	-- log fishes caught
-	append_items(tabs[4].items, menus_util.log_fishes())
+	append_items(tabs[4].items, tab_logs.fishes)
 	
 	-- log keyitems
 	--tabs[5].items = {}
@@ -528,7 +539,7 @@ function xichecklist_updatetabs(tab)
 	append_items(tabs[5].items, check_keyitems('Claim Slips'))
 	append_items(tabs[5].items, check_keyitems('Active Effects'))
 	append_items(tabs[5].items, check_keyitems('Voidwatch'))
-	append_items(tabs[5].items, menus_util.log_atmacitelevels())
+	append_items(tabs[5].items, tab_logs.atmacite_levels)
 	
 	-- log spells and trusts
 	--tabs[6].items = {}
@@ -568,7 +579,7 @@ function xichecklist_updatetabs(tab)
 	end
 	
 	-- log Titles
-	append_items(tabs[9].items, titles_util.log_titles())
+	append_items(tabs[9].items, tab_logs.titles)
 	
 	-- log RoE
 	if (tab == 'roe') then
@@ -585,10 +596,8 @@ function xichecklist_updatetabs(tab)
 		append_items(tabs[11].items, tab_logs.mmmrunes)
 		-- log Meeble Burrows
 		table.insert(tabs[11].items, '==== Meeble Burrows ====')
-		append_items(tabs[11].items, menus_util.log_meeble_burrows())
+		append_items(tabs[11].items, tab_logs.meeble_burrows)
 	end
-	
-	
 end
 
 function check_keyitems(keyitemtype)
@@ -808,12 +817,6 @@ windower.register_event('addon command', function(...)
 		windower.add_to_chat(161,"//xic [show|hide] to show / hide UI")
 		windower.add_to_chat(161,"//xic copy to copy current tab to clipboard")
 		windower.add_to_chat(161,"==== ==== ==== ====")
-		--windower.add_to_chat(161,"Note: to update titles must talk to Title NPCs")
-		--windower.add_to_chat(161,"Note: to update Fish caught must talk to Katsunaga (Menu: Types of fish caught)")
-		--windower.add_to_chat(161,"Note: to update  Meeble Burrows must talk to Meeble Burrows you must speak to any Burrow Researcher or Burrow Investigator")
-		--windower.add_to_chat(161,"Note: to update Outpost Warps you must speak to any Nation Teleporter")
-		--windower.add_to_chat(161,"Note: MMM Maze Count you must speak to Chatnachoq")
-		--windower.add_to_chat(161,"Note: Proto-Waypoint you must speak to any Proto-Waypoints")
 	elseif cmds.show:contains(arg[1]) then
 		trackermenusettings.visibility = true
 		trackermenusettings:save()
@@ -850,6 +853,7 @@ function addon_init()
 	playertitles = config.load('data/'.. windower.ffxi.get_player().name .. '_titles.xml', playertitles)
 	playerroe = {}
 	playerroe = config.load('data/'.. windower.ffxi.get_player().name .. '_roe.xml', playerroe)
+	xichecklist_updatemenulogs()
 	if (trackermenusettings.visibility and player) then
 		ui:show()
 	end
