@@ -1,6 +1,6 @@
 _addon.name     = 'xichecklist'
 _addon.author   = 'Anokata'
-_addon.version  = '0.9.4'
+_addon.version  = '0.9.5'
 _addon.commands = {'xichecklist', 'xic'}
 
 require('sets')
@@ -22,7 +22,7 @@ trackermenusettings.showcompleted = false
 
 trackermenusettings = config.load(trackermenusettings)
 
-playertracker = {
+defaultplayertracker = {
 	['mastery_rank'] = 0,
 	
 	['bastok_completed'] = 0,
@@ -143,39 +143,24 @@ playertracker = {
 	atmacite_levels = {},
 }
 
-playertracker = config.load('data/'.. windower.ffxi.get_player().name .. '.xml', playertracker)
-
 playertitles = {}
-playertitles = config.load('data/'.. windower.ffxi.get_player().name .. '_titles.xml', playertitles)
 playerroe = {}
-playerroe = config.load('data/'.. windower.ffxi.get_player().name .. '_roe.xml', playerroe)
 
--------------------------------------------------
+
 -- UI CONSTANTS
--------------------------------------------------
 local FONT_SIZE    = 12
 local LINE_HEIGHT  = 16
 local PADDING      = 8
 local CHAR_WIDTH   = 8
 local VISIBLE_ROWS = 15
-
--------------------------------------------------
 -- UI WINDOW STATE
--------------------------------------------------
 local dragging = false
 local drag_dx  = 0
 local drag_dy  = 0
-
--------------------------------------------------
--- UI STATE
--------------------------------------------------
 local active_tab = 1
 local scroll     = 0
 local selected   = 1
-
--------------------------------------------------
 -- UI DATA
--------------------------------------------------
 tabs = {
     {
         name = 'Main',
@@ -227,9 +212,6 @@ tabs = {
     },
 }
 
--------------------------------------------------
--- QUESTS STUFF HERE
--------------------------------------------------
 
 util = require('util/util')
 quest_util = require('util/quests')
@@ -302,7 +284,6 @@ function update_maintab()
 	append_maintab('Adoulin Quests %d/%d', playertracker['adoulin_completed'], playertracker['adoulin_total'])
 	append_maintab('Coalition Assignments %d/%d', playertracker['coalition_completed'], playertracker['coalition_total'])
 	
-
 	table.insert(tabs[1].items, '======= Key Items =======')
 	append_maintab('Permanent Key Items %d/%d', playertracker['Permanent_Key_Items_completed'], playertracker['Permanent_Key_Items_total'])
 	append_maintab('Magical Maps %d/%d', playertracker['Magical_Maps_completed'], playertracker['Magical_Maps_total'])
@@ -450,7 +431,6 @@ windower.register_event('incoming chunk', function(id, data, modified, injected,
 	end
 	
 	update_maintab()
-	
 end)
 
 windower.register_event('outgoing chunk', function(id, data, modified, injected, blocked)
@@ -459,11 +439,10 @@ windower.register_event('outgoing chunk', function(id, data, modified, injected,
 	if (id==0x05B) then
 		menus_util.handle_menu_options(data)
 	end
-	
 end)
 
 function xichecklist_updatetabs(tab)
-	
+	if not player then return false end
 	--tabs[1].items = {} -- reset main menu content
 	tabs[4].items = {}
 	tabs[5].items = {} -- reset main menu content
@@ -565,15 +544,10 @@ function xichecklist_updatetabs(tab)
 	append_items(tabs[12].items, menus_util.log_meeble_burrows())
 end
 
--------------------------------------------------
--- STUFF HERE
--------------------------------------------------
-
-local playerkeyitems = windower.ffxi.get_key_items()
-
 function check_keyitems(keyitemtype)
 	local output_list = {}
 	local keyitem_exclusions = require('maps/keyitems_exclusions')
+	local playerkeyitems = windower.ffxi.get_key_items()
 	local total, obtained = 0, 0
 	for id, keyitem in pairs(res.key_items) do
 		if (keyitem.category == keyitemtype and (not keyitem_exclusions:contains(id)) ) then
@@ -592,11 +566,10 @@ function check_keyitems(keyitemtype)
 	return output_list
 end
 
-local playerspells = windower.ffxi.get_spells()
-
 function check_playerspells(spelltype)
 	local output_list = {}
 	local spells_exclusions = require('maps/spells_exclusions')
+	local playerspells = windower.ffxi.get_spells()
 	local total, obtained = 0, 0
 	for id, spell in pairs(res.spells) do
 		local completion = false
@@ -646,9 +619,7 @@ function check_exp()
 	playertracker['Masterlevels_highest'] = highest_master_level
 end
 
--------------------------------------------------
 -- UI TEXT OBJECT
--------------------------------------------------
 local ui = texts.new('', {
     pos = { x = trackermenusettings.pos.x, y = trackermenusettings.pos.y },
     text = {
@@ -663,11 +634,7 @@ local ui = texts.new('', {
     padding = PADDING,
 })
 
-ui:show()
-
--------------------------------------------------
 -- UI HELPERS
--------------------------------------------------
 local function inside(mx, my, x, y, width, h)
 	return mx >= x and mx <= x + width
 		and my >= y and my <= y + h
@@ -681,9 +648,7 @@ local function clamp_scroll(count)
 	end
 	scroll = math.max(0, math.min(scroll, count - VISIBLE_ROWS))
 end
--------------------------------------------------
--- UI DRAW
--------------------------------------------------
+
 local function draw()
 	local text = ''
 	-- Tabs
@@ -711,8 +676,6 @@ end
 
 draw()
 
--------------------------------------------------
--- MOUSE HANDLER
 -------------------------------------------------
 windower.register_event('mouse', function(type, x, y, delta, blocked)
 	if (ui:visible() == false) then return end
@@ -752,25 +715,6 @@ windower.register_event('mouse', function(type, x, y, delta, blocked)
 			tab_x = tab_x + width
 		end
 	end
-    -------------------------------------------------
-    -- DRAG WINDOW
-    -------------------------------------------------
-    --[[
-	if type == 1 and inside(x, y, px, py, win_width, LINE_HEIGHT + PADDING) then
-        dragging = true
-        drag_dx = x - px
-        drag_dy = y - py
-        return true
-    end
-    if type == 0 then dragging = false end
-    if dragging and type == 1 then
-        trackermenusettings.pos.x = x - drag_dx
-        trackermenusettings.pos.y = y - drag_dy
-		--trackermenusettings:save()
-        draw()
-        return true
-    end
-	--]]
     -------------------------------------------------
     --[[ LIST CLICK
     -------------------------------------------------
@@ -824,8 +768,12 @@ windower.register_event('addon command', function(...)
 		--windower.add_to_chat(161,"Note: MMM Maze Count you must speak to Chatnachoq")
 		--windower.add_to_chat(161,"Note: Proto-Waypoint you must speak to any Proto-Waypoints")
 	elseif cmds.show:contains(arg[1]) then
+		trackermenusettings.visibility = true
+		trackermenusettings:save()
 		ui:show()
 	elseif cmds.hide:contains(arg[1]) then
+		trackermenusettings.visibility = false
+		trackermenusettings:save()
 		ui:hide()
 	elseif cmds.copy:contains(arg[1]) then
 		windower.copy_to_clipboard(util.table_to_clipboard(tabs[active_tab].items))
@@ -836,9 +784,31 @@ windower.register_event('addon command', function(...)
 	end
 end)
 
--------------------------------------------------
--- CLEANUP
--------------------------------------------------
+-- Init & Cleanup
+function addon_clear()
+	playertracker = defaultplayertracker
+	playertitles = {}
+	playerroe = {}
+	player = nil
+	ui:hide()
+end
+
+function addon_init()
+	addon_clear() -- clear on re/load
+	player = windower.ffxi.get_player()
+	if not player then return end
+	playertracker = config.load('data/'.. windower.ffxi.get_player().name .. '.xml', playertracker)
+	playertitles = {}
+	playertitles = config.load('data/'.. windower.ffxi.get_player().name .. '_titles.xml', playertitles)
+	playerroe = {}
+	playerroe = config.load('data/'.. windower.ffxi.get_player().name .. '_roe.xml', playerroe)
+	if (trackermenusettings.visibility and player) then
+		ui:show()
+	end
+end
+
+windower.register_event('load', 'login', 'logout', addon_init)
+windower.register_event('logout', addon_clear)
 windower.register_event('unload', function()
 	ui:destroy()
 end)
