@@ -350,7 +350,7 @@ function menus_util.log_titles()
 			end
 		end
 		if (not titlesexclusions:contains(key)) then  
-			table.insert(output_list, util.list_item(nil, res.titles[key].en .. obtainmethod, completion))
+			table.insert(output_list, util.list_item(nil, res.titles[key].en, completion, obtainmethod))
 		end
 	end
 	playertracker['Titles_completed'] = complete

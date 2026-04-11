@@ -51,13 +51,14 @@ function util.cleanspaces(str)
     return str:gsub(" ", "_")
 end
 
-function util.list_item(category, text, completed)
+function util.list_item(category, text, completed, obtainmethod)
 	if (completed ~= true) then local completed = false end
 	if (text == nil) then return end
 	local item = {
 		category = category,
 		text = text,
 		completed = completed,
+		obtainmethod = obtainmethod,
 	}
 	return item
 end
@@ -83,6 +84,17 @@ function util.table_to_clipboard(tbl)
         result = result .. text .. "\n"
     end
     return result
+end
+
+function util.log_tablog(tbl, striplastbracket)
+	for key, item in pairs(tbl) do
+		local text = item.text
+		text = text:gsub("\\cs%(%d+,%d+,%d+%)", "")
+		text = text:gsub("\\cr", "")
+		if (item.completed == false) then
+			windower.add_to_chat(160, text)
+		end
+	end
 end
 
 return util

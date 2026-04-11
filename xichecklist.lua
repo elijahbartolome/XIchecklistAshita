@@ -1,6 +1,6 @@
 _addon.name     = 'xichecklist'
 _addon.author   = 'Anokata'
-_addon.version  = '0.10.0'
+_addon.version  = '0.11.0'
 _addon.commands = {'xichecklist', 'xic'}
 
 require('sets')
@@ -280,7 +280,7 @@ local cmds = {
 	hide = S{'hide'},
 	show = S{'show'},
 	copy = S{'copy'},
-	test = S{'test'},
+	log = S{'log'},
 }
 
 local function append_items(dst, src)
@@ -295,12 +295,15 @@ local function append_items(dst, src)
 			display = false
 		end
 		if item.category ~= nil then 
-			text = '[' .. item.category .. '] ' .. text
+			text = '['..item.category..'] '..text
 		end
 		if item.completed == true then
 			menucolor = '(0,255,0)'
 		end
-		local text = '\\cs' .. menucolor .. text ..'\\cr'
+		if item.obtainmethod ~= nil then 
+			text = text..item.obtainmethod
+		end
+		local text = '\\cs'..menucolor..text..'\\cr'
 		if (display == true) then
 			table.insert(dst, text)
 		end
@@ -320,9 +323,9 @@ function append_header(tab, text, ...)
 	if (args[1]==args[2]) then menulinecolor = '(0,255,0)' end
 	text = '==== '..text..' ===='
 	table.insert(tabs[tab].items, '\\cs'..menulinecolor..text:format(...)..'\\cr')
-	--[[if args[2] == 0 then
+	if args[2] == 0 then
 		table.insert(tabs[tab].items, '\\cs(235,0,0)You must zone to update.\\cr')
-	end--]]
+	end
 	
 end
 
@@ -578,7 +581,7 @@ function xichecklist_updatetabs(tab)
 	
 	-- log fishes caught
 	append_header(4, 'Type of Fishes Caught (%d/%d)', playertracker['fishes_completed'], playertracker['fishes_total'])
-	append_addonhelp(4, 'You must talk to Katsunaga in Mhuaura (H-9) and select "Types of fishes caught"', playertracker.talk_to_npc['katsunaga'])
+	append_addonhelp(4, 'You must talk to \\cs(255,255,255)Katsunaga\\cr @ \\cs(50,150,255)Mhuaura (H-9)\\cr \\cs(255,255,255)(Menu: Types of fishes caught)\\cr', playertracker.talk_to_npc['katsunaga'])
 	append_items(tabs[4].items, tab_logs.fishes)
 	
 	-- log keyitems
@@ -596,6 +599,7 @@ function xichecklist_updatetabs(tab)
 	append_header(5, 'Voidwatch Key Items (%d/%d)', playertracker['Voidwatch_completed'], playertracker['Voidwatch_total'])
 	append_items(tabs[5].items, check_keyitems('Voidwatch'))
 	append_header(5, 'Atmacite Levels (%d/%d)', playertracker['atmacitelevels_completed'], playertracker['atmacitelevels_total'])
+	append_addonhelp(5, 'You must talk to any \\cs(255,255,255)Atmacite Refiner\\cr \\cs(50,150,255)(Menu: Enrich Atmas)\\cr', playertracker.talk_to_npc['atmacite_refiner'])
 	append_items(tabs[5].items, tab_logs.atmacite_levels)
 	
 	-- log spells and trusts
@@ -626,10 +630,10 @@ function xichecklist_updatetabs(tab)
 	append_header(7, 'Adoulin Waypoints (%d/%d)', playertracker['waypoints_completed'], playertracker['waypoints_total'])
 	append_items(tabs[7].items, tab_logs.waypoints)
 	append_header(7, 'Outpost Warps (%d/%d)', playertracker['outposts_completed'], playertracker['outposts_total'])
-	append_addonhelp(7, 'You must talk to any Outpost Teleporter NPC in three nations.', playertracker.talk_to_npc['outpostnpc'])
+	append_addonhelp(7, 'You must talk to any \\cs(255,255,255)Outpost Teleporter NPC\\cr @ \\cs(50,150,255)three nations\\cr.', playertracker.talk_to_npc['outpostnpc'])
 	append_items(tabs[7].items, tab_logs.outposts)
 	append_header(7, 'Proto-Waypoints (%d/%d)', playertracker['protowaypoints_completed'], playertracker['protowaypoints_total'])
-	append_addonhelp(7, 'You must talk to any Proto-Waypoint.', playertracker.talk_to_npc['protowaypoint'])
+	append_addonhelp(7, 'You must talk to any \\cs(255,255,255)Proto-Waypoint\\cr.', playertracker.talk_to_npc['protowaypoint'])
 	append_items(tabs[7].items, tab_logs.protowaypoints)
 	
 	-- Log Job Points Spent
@@ -650,22 +654,22 @@ function xichecklist_updatetabs(tab)
 	
 	-- log Titles
 	append_header(9, 'Titles (%d/%d)', playertracker['Titles_completed'], playertracker['Titles_total'])
-	append_addonhelp(9, 'You must talk to Aligi-Kufongi @ Tavnazian Safehold (H-9)', playertracker.talk_to_npc['Aligi-Kufongi'])
-	append_addonhelp(9, 'You must talk to Koyol-Futenol @ Aht Urhgan Whitegate (E-9)', playertracker.talk_to_npc['Koyol-Futenol'])
-	append_addonhelp(9, 'You must talk to Tamba-Namba @ Southern San d\'Oria (S) (L-8)', playertracker.talk_to_npc['Tamba-Namba'])
-	append_addonhelp(9, 'You must talk to Bhio Fehriata @ Bastok Markets (S) (I-10)', playertracker.talk_to_npc['Bhio_Fehriata'])
-	append_addonhelp(9, 'You must talk to Cattah Pamjah @ Windurst Waters (S) (G-10)', playertracker.talk_to_npc['Cattah_Pamjah'])
-	append_addonhelp(9, 'You must talk to Moozo-Koozo @ Southern San d\'Oria (K-6)', playertracker.talk_to_npc['Moozo-Koozo'])
-	append_addonhelp(9, 'You must talk to Styi Palneh @ Port Bastok (I-7)', playertracker.talk_to_npc['Styi_Palneh'])
-	append_addonhelp(9, 'You must talk to Burute-Sorute @ Windurst Walls (H-10)', playertracker.talk_to_npc['Burute-Sorute'])
-	append_addonhelp(9, 'You must talk to Tuh Almobankha @ Lower Jeuno (I-8)', playertracker.talk_to_npc['Tuh_Almobankha'])
-	append_addonhelp(9, 'You must talk to Zuah Lepahnyu @ Port Jeuno (J-8)', playertracker.talk_to_npc['Zuah_Lepahnyu'])
-	append_addonhelp(9, 'You must talk to Shupah Mujuuk @ Rabao (G-8)', playertracker.talk_to_npc['Shupah_Mujuuk'])
-	append_addonhelp(9, 'You must talk to Yulon-Polon @ Selbina (I-9)', playertracker.talk_to_npc['Yulon-Polon'])
-	append_addonhelp(9, 'You must talk to Willah Maratahya @ ', playertracker.talk_to_npc['Willah_Maratahya'])
-	append_addonhelp(9, 'You must talk to Eron-Tomaron @ Mhaura (I-8)', playertracker.talk_to_npc['Eron-Tomaron'])
-	append_addonhelp(9, 'You must talk to Quntsu-Nointsu @ Norg (G-7)', playertracker.talk_to_npc['Quntsu-Nointsu'])
-	append_addonhelp(9, 'You must talk to Debadle-Levadle @ Western Adoulin (H-8)', playertracker.talk_to_npc['Debadle-Levadle'])
+	append_addonhelp(9, 'You must talk to \\cs(255,255,255)Aligi-Kufongi\\cr @ \\cs(50,150,255)Tavnazian Safehold (H-9)\\cr', playertracker.talk_to_npc['Aligi-Kufongi'])
+	append_addonhelp(9, 'You must talk to \\cs(255,255,255)Koyol-Futenol\\cr @ \\cs(50,150,255)Aht Urhgan Whitegate (E-9)\\cr', playertracker.talk_to_npc['Koyol-Futenol'])
+	append_addonhelp(9, 'You must talk to \\cs(255,255,255)Tamba-Namba\\cr @ \\cs(50,150,255)Southern San d\'Oria (S) (L-8)\\cr', playertracker.talk_to_npc['Tamba-Namba'])
+	append_addonhelp(9, 'You must talk to \\cs(255,255,255)Bhio Fehriata\\cr @ \\cs(50,150,255)Bastok Markets (S) (I-10)\\cr', playertracker.talk_to_npc['Bhio_Fehriata'])
+	append_addonhelp(9, 'You must talk to \\cs(255,255,255)Cattah Pamjah\\cr @ \\cs(50,150,255)Windurst Waters (S) (G-10)\\cr', playertracker.talk_to_npc['Cattah_Pamjah'])
+	append_addonhelp(9, 'You must talk to \\cs(255,255,255)Moozo-Koozo\\cr @ \\cs(50,150,255)Southern San d\'Oria (K-6)\\cr', playertracker.talk_to_npc['Moozo-Koozo'])
+	append_addonhelp(9, 'You must talk to \\cs(255,255,255)Styi Palneh\\cr @ \\cs(50,150,255)Port Bastok (I-7)\\cr', playertracker.talk_to_npc['Styi_Palneh'])
+	append_addonhelp(9, 'You must talk to \\cs(255,255,255)Burute-Sorute\\cr @ \\cs(50,150,255)Windurst Walls (H-10)\\cr', playertracker.talk_to_npc['Burute-Sorute'])
+	append_addonhelp(9, 'You must talk to \\cs(255,255,255)Tuh Almobankha\\cr @ \\cs(50,150,255)Lower Jeuno (I-8)\\cr', playertracker.talk_to_npc['Tuh_Almobankha'])
+	append_addonhelp(9, 'You must talk to \\cs(255,255,255)Zuah Lepahnyu\\cr @ \\cs(50,150,255)Port Jeuno (J-8)\\cr', playertracker.talk_to_npc['Zuah_Lepahnyu'])
+	append_addonhelp(9, 'You must talk to \\cs(255,255,255)Shupah Mujuuk\\cr @ \\cs(50,150,255)Rabao (G-8)\\cr', playertracker.talk_to_npc['Shupah_Mujuuk'])
+	append_addonhelp(9, 'You must talk to \\cs(255,255,255)Yulon-Polon\\cr @ \\cs(50,150,255)Selbina (I-9)\\cr', playertracker.talk_to_npc['Yulon-Polon'])
+	append_addonhelp(9, 'You must talk to \\cs(255,255,255)Willah Maratahya\\cr @ \\cs(50,150,255)Mhaura (I-8)\\cr', playertracker.talk_to_npc['Willah_Maratahya'])
+	append_addonhelp(9, 'You must talk to \\cs(255,255,255)Eron-Tomaron\\cr @ \\cs(50,150,255)Kazham (G-7)\\cr', playertracker.talk_to_npc['Eron-Tomaron'])
+	append_addonhelp(9, 'You must talk to \\cs(255,255,255)Quntsu-Nointsu\\cr @ \\cs(50,150,255)Norg (G-7)\\cr', playertracker.talk_to_npc['Quntsu-Nointsu'])
+	append_addonhelp(9, 'You must talk to \\cs(255,255,255)Debadle-Levadle\\cr @ \\cs(50,150,255)Western Adoulin (H-8)\\cr', playertracker.talk_to_npc['Debadle-Levadle'])
 	append_items(tabs[9].items, tab_logs.titles)
 	
 	-- log RoE
@@ -684,10 +688,10 @@ function xichecklist_updatetabs(tab)
 		append_items(tabs[11].items, tab_logs.mmmrunes)
 		-- log Meeble Burrows
 		append_header(11, 'Meeble Burrows (%d/%d)', playertracker['meebleburrows_completed'], playertracker['meebleburrows_total'])
-		append_addonhelp(11, 'You must talk to Burrow Investigator @ Upper Jeuno (I-8)', playertracker.talk_to_npc['meeble_sauromugue'])
-		append_addonhelp(11, 'Menu: Review expedition specifics -> Sauromugue Champaign', playertracker.talk_to_npc['meeble_sauromugue'])
-		append_addonhelp(11, 'You must talk to Burrow Investigator @ Upper Jeuno (I-8)', playertracker.talk_to_npc['meeble_batallia'])
-		append_addonhelp(11, 'Menu: Review expedition specifics -> Batallia Downs', playertracker.talk_to_npc['meeble_batallia'])
+		append_addonhelp(11, 'You must talk to \\cs(255,255,255)Burrow Investigator\\cr @ \\cs(50,150,255)Upper Jeuno (I-8)\\cr', playertracker.talk_to_npc['meeble_sauromugue'])
+		append_addonhelp(11, 'Menu: Review expedition specifics -> \\cs(255,255,255)Sauromugue Champaign\\cr', playertracker.talk_to_npc['meeble_sauromugue'])
+		append_addonhelp(11, 'You must talk to \\cs(255,255,255)Burrow Investigator\\cr @ \\cs(50,150,255)Upper Jeuno (I-8)\\cr', playertracker.talk_to_npc['meeble_batallia'])
+		append_addonhelp(11, 'Menu: Review expedition specifics -> \\cs(255,255,255)Batallia Downs\\cr', playertracker.talk_to_npc['meeble_batallia'])
 		append_items(tabs[11].items, tab_logs.meeble_burrows)
 	end
 end
@@ -910,6 +914,7 @@ windower.register_event('addon command', function(...)
 		windower.add_to_chat(161,"==== xichecklist / xic ====")
 		windower.add_to_chat(161,"//xic [show|hide] to show / hide UI")
 		windower.add_to_chat(161,"//xic copy to copy current tab to clipboard")
+		windower.add_to_chat(161,"//xic log <category> to log in chat")
 		windower.add_to_chat(161,"==== ==== ==== ====")
 		windower.add_to_chat(161,"Require zoning to update Quests / Warps / Monstrosity / MMM")
 		windower.add_to_chat(161,"==== ==== ==== ====")
@@ -934,9 +939,110 @@ windower.register_event('addon command', function(...)
 	elseif cmds.copy:contains(arg[1]) then
 		windower.copy_to_clipboard(util.table_to_clipboard(tabs[active_tab].items))
 		windower.add_to_chat(100, "Copy to clipboard")
-	elseif cmds.test:contains(arg[1]) then
-		--update_maintab()
-		windower.add_to_chat(100, "test")
+	elseif cmds.log:contains(arg[1]) then
+		if arg[2]:lower() == 'titles' then
+			util.log_tablog(tab_logs.titles)
+			windower.add_to_chat(160, "=== Titles (%d/%d) ===":format(playertracker['Titles_completed'], playertracker['Titles_total']))
+		elseif arg[2]:lower() == 'monstrosity' then
+			windower.add_to_chat(160, "=== Species Levels (%d/%d) ===":format(playertracker['MonsterLevels_completed'], playertracker['MonsterLevels_total']))
+			util.log_tablog(tab_logs.monsterlevels)
+			windower.add_to_chat(160, "=== Monster Variants (%d/%d) ===":format(playertracker['MonsterVariants_completed'], playertracker['MonsterVariants_total']))
+			util.log_tablog(tab_logs.monstervariants)
+			windower.add_to_chat(160, "=== Race / Job Instincts (%d/%d) ===":format(playertracker['Racejobinstinct_completed'], playertracker['Racejobinstinct_total']))
+			util.log_tablog(tab_logs.racejobinstincts)
+			windower.add_to_chat(160, "=== Monster Instincts (%d/%d) ===":format(playertracker['MonsterInsincts_completed'], playertracker['MonsterInsincts_total']))
+			util.log_tablog(tab_logs.monster_instincts)
+		elseif arg[2]:lower() == 'mmm' then
+			windower.add_to_chat(160, "=== MMM Vouchers Unlocks (%d/%d) ===":format(playertracker['mmmvouchers_completed'], playertracker['mmmvouchers_total']))
+			util.log_tablog(tab_logs.mmmvouchers)
+			windower.add_to_chat(160, "=== MMM Runes Unlocks (%d/%d) ===":format(playertracker['mmmrunes_completed'], playertracker['mmmrunes_total']))
+			util.log_tablog(tab_logs.mmmrunes)
+		elseif arg[2]:lower() == 'meeble' then
+			windower.add_to_chat(160, "=== Meeble Burrows (%d/%d) ===":format(playertracker['meebleburrows_completed'], playertracker['meebleburrows_total']))
+			util.log_tablog(tab_logs.meeble_burrows)
+		elseif arg[2]:lower() == 'warps' then
+			windower.add_to_chat(160, "=== Home Points (%d/%d) ===":format(playertracker['homepoints_completed'], playertracker['homepoints_total']))
+			util.log_tablog(tab_logs.homepoints)
+			windower.add_to_chat(160, "=== Survival Guides (%d/%d) ===":format(playertracker['survivalguides_completed'], playertracker['survivalguides_total']))
+			util.log_tablog(tab_logs.survivalguides)
+			windower.add_to_chat(160, "=== Adoulin Waypoints (%d/%d) ===":format(playertracker['waypoints_completed'], playertracker['waypoints_total']))
+			util.log_tablog(tab_logs.waypoints)
+			windower.add_to_chat(160, "=== Outpost Warps (%d/%d) ===":format(playertracker['outposts_completed'], playertracker['outposts_total']))
+			util.log_tablog(tab_logs.outposts)
+			windower.add_to_chat(160, "=== Proto-Waypoints (%d/%d) ===":format(playertracker['protowaypoints_completed'], playertracker['protowaypoints_total']))
+			util.log_tablog(tab_logs.protowaypoints)
+		elseif arg[2]:lower() == 'fish' then
+			windower.add_to_chat(160, "=== Type of Fish (%d/%d) ===":format(playertracker['fishes_completed'], playertracker['fishes_total']))
+			util.log_tablog(tab_logs.fishes)
+		elseif arg[2]:lower() == 'quests' then
+			windower.add_to_chat(160, '=== San d\'Oria Quests (%d/%d) ===':format(playertracker['sandoria_completed'], playertracker['sandoria_total']))
+			util.log_tablog(tab_logs.quests['sandoria'])
+			windower.add_to_chat(160, '=== Bastok Quests (%d/%d) ===':format(playertracker['bastok_completed'], playertracker['bastok_total']))
+			util.log_tablog(tab_logs.quests['bastok'])
+			windower.add_to_chat(160, '=== Windurst Quests (%d/%d) ===':format(playertracker['windurst_completed'], playertracker['windurst_total']))
+			util.log_tablog(tab_logs.quests['windurst'])
+			windower.add_to_chat(160, '=== Jeuno Quests (%d/%d) ===':format(playertracker['jeuno_completed'], playertracker['jeuno_total']))
+			util.log_tablog(tab_logs.quests['jeuno'])
+			windower.add_to_chat(160, '=== Aht Urhgan Quests (%d/%d) ===':format(playertracker['ahturhgan_completed'], playertracker['ahturhgan_total']))
+			util.log_tablog(tab_logs.quests['ahturhgan'])
+			windower.add_to_chat(160, '=== Crystal War Quests (%d/%d) ===':format(playertracker['crystalwar_completed'], playertracker['crystalwar_total']))
+			util.log_tablog(tab_logs.quests['crystalwar'])
+			windower.add_to_chat(160, '=== Outlands Quests (%d/%d) ===':format(playertracker['outlands_completed'], playertracker['outlands_total']))
+			util.log_tablog(tab_logs.quests['outlands'])
+			windower.add_to_chat(160, '=== Other Quests (%d/%d) ===':format(playertracker['other_completed'], playertracker['other_total']))
+			util.log_tablog(tab_logs.quests['other'])
+			windower.add_to_chat(160, '=== Abyssea Quests (%d/%d) ===':format(playertracker['abyssea_completed'], playertracker['abyssea_total']))
+			util.log_tablog(tab_logs.quests['abyssea'])
+			windower.add_to_chat(160, '=== Adoulin Quests (%d/%d) ===':format(playertracker['adoulin_completed'], playertracker['adoulin_total']))
+			util.log_tablog(tab_logs.quests['adoulin'])
+			windower.add_to_chat(160, '=== Coalition Assignments (%d/%d) ===':format(playertracker['coalition_completed'], playertracker['coalition_total']))
+			util.log_tablog(tab_logs.quests['coalition'])
+			windower.add_to_chat(160, '=== Campaign Ops (%d/%d) ===':format(playertracker['campaign_completed'], playertracker['campaign_total']))
+			util.log_tablog(tab_logs.quests['campaign2'])
+		elseif arg[2]:lower() == 'sandoria' then
+			windower.add_to_chat(160, '=== San d\'Oria Quests (%d/%d) ===':format(playertracker['sandoria_completed'], playertracker['sandoria_total']))
+			util.log_tablog(tab_logs.quests['sandoria'])
+		elseif arg[2]:lower() == 'bastok' then
+			windower.add_to_chat(160, '=== Bastok Quests (%d/%d) ===':format(playertracker['bastok_completed'], playertracker['bastok_total']))
+			util.log_tablog(tab_logs.quests['bastok'])
+		elseif arg[2]:lower() == 'windurst' then
+			windower.add_to_chat(160, '=== Windurst Quests (%d/%d) ===':format(playertracker['windurst_completed'], playertracker['windurst_total']))
+			util.log_tablog(tab_logs.quests['windurst'])
+		elseif arg[2]:lower() == 'jeuno' then
+			windower.add_to_chat(160, '=== Jeuno Quests (%d/%d) ===':format(playertracker['jeuno_completed'], playertracker['jeuno_total']))
+			util.log_tablog(tab_logs.quests['jeuno'])
+		elseif arg[2]:lower() == 'ahturhgan' then
+			windower.add_to_chat(160, '=== Aht Urhgan Quests (%d/%d) ===':format(playertracker['ahturhgan_completed'], playertracker['ahturhgan_total']))
+			util.log_tablog(tab_logs.quests['ahturhgan'])
+		elseif arg[2]:lower() == 'crystalwar' then
+			windower.add_to_chat(160, '=== Crystal War Quests (%d/%d) ===':format(playertracker['crystalwar_completed'], playertracker['crystalwar_total']))
+			util.log_tablog(tab_logs.quests['crystalwar'])
+		elseif arg[2]:lower() == 'outlands' then
+			windower.add_to_chat(160, '=== Outlands Quests (%d/%d) ===':format(playertracker['outlands_completed'], playertracker['outlands_total']))
+			util.log_tablog(tab_logs.quests['outlands'])
+		elseif arg[2]:lower() == 'other' then
+			windower.add_to_chat(160, '=== Other Quests (%d/%d) ===':format(playertracker['other_completed'], playertracker['other_total']))
+			util.log_tablog(tab_logs.quests['other'])
+		elseif arg[2]:lower() == 'abyssea' then
+			windower.add_to_chat(160, '=== Abyssea Quests (%d/%d) ===':format(playertracker['abyssea_completed'], playertracker['abyssea_total']))
+			util.log_tablog(tab_logs.quests['abyssea'])
+		elseif arg[2]:lower() == 'adoulin' then
+			windower.add_to_chat(160, '=== Adoulin Quests (%d/%d) ===':format(playertracker['adoulin_completed'], playertracker['adoulin_total']))
+			util.log_tablog(tab_logs.quests['adoulin'])
+		elseif arg[2]:lower() == 'coalition' then
+			windower.add_to_chat(160, '=== Coalition Assignments (%d/%d) ===':format(playertracker['coalition_completed'], playertracker['coalition_total']))
+			util.log_tablog(tab_logs.quests['coalition'])
+		elseif arg[2]:lower() == 'campaign' then
+			windower.add_to_chat(160, '=== Campaign Ops (%d/%d) ===':format(playertracker['campaign_completed'], playertracker['campaign_total']))
+			util.log_tablog(tab_logs.quests['campaign2'])
+		elseif (arg[2]:lower() == 'main') or (arg[2]:lower() == 'summary') then
+			for key, text in pairs(tabs[1].items) do
+				text = text:gsub("\\cs%(%d+,%d+,%d+%)", "")
+				text = text:gsub("\\cr", "")
+				windower.add_to_chat(160, text)
+			end
+		end
+		
 	end
 end)
 
