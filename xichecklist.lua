@@ -3,7 +3,6 @@ addon.author   = 'Anokata'
 addon.version  = '0.11.3'
 addon.commands = {'xichecklist', 'xic'}
 
-local texts = require('texts')
 local settings = require('settings')
 require('chat')
 
@@ -308,7 +307,7 @@ function append_maintab(text, ...)
 	local args = {...}
 	local menulinecolor = '(255,255,0)'
 	if (args[1]==args[2]) then menulinecolor = '(0,255,0)' end
-	table.insert(tabs[1].items, '\\cs'..menulinecolor..'-'..text:format(...)..'\\cr')
+	table.insert(tabs[1].items, {{menulinecolor}'-'..text:format(...)..'\\cr'})
 end
 
 function append_header(tab, text, ...)
@@ -562,9 +561,8 @@ ashita.events.register('packet_in', 'incoming chunk', function(e)
 		menus_util.reset_current_menu()
 	end
 	
-	update_maintab()
+	--update_maintab()
 	--xichecklist_updatetabs()
-	draw()
 end)
 
 ashita.events.register('packet_out', 'outgoing chunk', function(e)
@@ -837,135 +835,41 @@ function check_exp()
 	]]
 end
 
--- UI TEXT OBJECT
-local ui = texts.new('', {
-    pos = { x = trackermenusettings.pos.x, y = trackermenusettings.pos.y },
-    text = {
-        font = 'Consolas',
-        size = FONT_SIZE,
-        red = 255, green = 255, blue = 255,
-    },
-    bg = {
-        red = 25, green = 25, blue = 25,
-        alpha = 200,
-    },
-    padding = PADDING,
-})
-
 -- UI HELPERS
-local function inside(mx, my, x, y, width, h)
-	return mx >= x and mx <= x + width
-		and my >= y and my <= y + h
-end
-
-local function clamp_scroll(count)
-	if selected < scroll + 1 then
-		scroll = selected - 1
-	elseif selected > scroll + VISIBLE_ROWS then
-		scroll = selected - VISIBLE_ROWS
-	end
-	scroll = math.max(0, math.min(scroll, count - VISIBLE_ROWS))
-end
-
-function draw()
-	local text = ''
-	-- Tabs
-	for i, tab in ipairs(tabs) do
-		text = text .. (i == active_tab and '['..tab.name..'] ' or ' '..tab.name..'  ')
-	end
-	text = text .. '\n────────────\n'
-	-- List
-	local items = tabs[active_tab].items
+function ui.render_items(tab)
+	local items = tab.items
 	local count = #items
 	if count == 0 then
 		-- add active_tab helper text here
-		items = {'\\cs(128,128,128)Change zones to update Quests / Campaigns / Warps / Monstrosity \\cr', '\\cs(128,128,128)Check the README or "//xic help" to register NPC-related data \\cr'}
+		items = {{Color={128,128,128}, Text="Change zones to update Quests / Campaigns / Warps / Monstrosity}"}, {Color={128,128,128}, Text="Check the README or '//xic help' to register NPC-related data"}}
 		count = 1
 	end
-	clamp_scroll(count)
-	for i = 1, VISIBLE_ROWS do
-		local idx = i + scroll
-		if items[idx] then
-			text = text .. (idx == selected and '\\cs(255,0,0)> ' or '  ') .. items[idx] .. '\\cr\n'
-		end
+	for _, item in pairs(items) do
+		imgui.TextColored(item[Color], item[Text])
 	end
-	ui:text(text)
-	ui:pos(trackermenusettings.pos.x, trackermenusettings.pos.y)
 end
 
-draw()
-
+function ui.render()
+	if (not trackermenusettings.visibility) then
+        return;
+    end
+	imgui.SetNextWindowSize({ 600, 400, });
+    imgui.SetNextWindowSizeConstraints({ 600, 400, }, { FLT_MAX, FLT_MAX, });
+    if (imgui.Begin('XIChecklist', trackermenusettings.visibility, ImGuiWindowFlags_AlwaysAutoResize)) then
+		if (imgui.BeginTabBar(##checklist_tabbar, ImGuiTabBarFlags_NoCloseWithMiddleMouseButton)) then
+			for i, tab in ipairs(tabs) do
+				if (imgui.BeginTabItem(tab.name, nil)) then
+					ui.render_items(tab)
+					imgui.EndTabItem();
+				end
+			end
+		end
+		imgui.EndTabBar();
+	end
+	imgui.End();
+end
 -------------------------------------------------
-ashita.events.register('mouse', 'mouse_callback', function(e)
-	if (ui:visible() == false) then return end
-    local px, py = ui:pos()
-    local items = tabs[active_tab].items
-    local count = #items
-	-- get win_width
-	if (not win_width) then
-		win_width = 0
-		for i,tab in ipairs(tabs) do
-			tab_width = #tab.name * CHAR_WIDTH *1.5
-			win_width = win_width + tab_width
-		end
-	end
-	-- save new UI pos if changed
-	if (px ~= trackermenusettings.pos.x) and (py ~= trackermenusettings.pos.y) then
-		trackermenusettings.pos.x = px
-		trackermenusettings.pos.y = py
-		settings.save(trackermenusettings)
-	end
-    -- Tab Click
-	if e.message == 1 then
-		local tab_x = px + PADDING
-		local tab_y = py + PADDING
-		for i, tab in ipairs(tabs) do
-			local label = (i == active_tab and '['..tab.name..'] ' or ' '..tab.name..'  ')
-			local width = #label * CHAR_WIDTH + i*2
-			if inside(e.x, e.y, tab_x, tab_y, width, LINE_HEIGHT) then
-				active_tab = i
-				selected = 1
-				scroll = 0
-				draw()
-				return true
-			end
-			tab_x = tab_x + width
-		end
-	end
-    -- LIST CLICK
-    --[[
-	if type == 1 then
-        local list_y = py + PADDING + LINE_HEIGHT * 2
-
-        for i = 1, VISIBLE_ROWS do
-            local idx = i + scroll
-            local row_y = list_y + (i - 1) * LINE_HEIGHT
-
-            if inside(x, y, px, row_y, win_width, LINE_HEIGHT) then
-                if items[idx] then
-                    selected = idx
-                    clamp_scroll(count)
-                    draw()
-                    return true
-                end
-            end
-        end
-    end]]
-	--- mouse scroll up down
-	if e.delta and e.delta ~= 0 then
-		--if inside(x, y, px, py, win_width, (VISIBLE_ROWS + 4)) then
-			if e.delta > 0 then
-				selected = math.max(1, selected - 1)
-				clamp_scroll(count)
-			else
-				selected = math.min(count, selected + 1)
-				clamp_scroll(count)
-			end
-			draw()
-			return true
-		--end
-	end
-end)
+ashita.events.register('d3d_present', 'present_cb', ui.render);
 
 ashita.events.register('command', 'chronicle_command', function(e)
 	local args = e.command:args();
@@ -1129,7 +1033,6 @@ function addon_clear()
 	playerroe = {}
 	tab_logs = defaulttab_logs
 	player = nil
-	ui:hide()
 end
 
 function addon_init()
@@ -1151,5 +1054,4 @@ end
 ashita.events.register('load', 'load_cb', addon_init);
 ashita.events.register('unload', 'unload_cb', function()
 	addon_clear()
-	ui:destroy()
 end)
