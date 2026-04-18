@@ -9,7 +9,7 @@ local warps = {
 
 function warps_util.checkwarps(warptype)
 	if warps_util.warps_data == nil then return end
-	local subdata = warps_util.warps_data:sub(unpack(warps[warptype].data))
+	local subdata = warps_util.warps_data:sub(warps[warptype].data[1], warps[warptype].data[2])
 	local total, obtained = 0, 0
 	output_list = {}
 	-- check for obtained warp

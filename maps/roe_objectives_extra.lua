@@ -1,4 +1,4 @@
-return S{
+return {
     772, -- Spoils (Ivory Chip)
     773, -- Spoils (Scarlet Chip)
     774, -- Spoils (Emerald Chip)

@@ -1,4 +1,4 @@
-return S{
+return {
 	
 	26, -- Dia IV
 	27, -- Dia V

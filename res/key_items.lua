@@ -3226,7 +3226,7 @@ return {
     [3372] = {id=3372,en="Mog Kupon A-AF+3",ja="クーポンA-AF+3",category="Temporary Key Items"},
     [3373] = {id=3373,en="Mog Kupon A-Rel+3",ja="クーポンA-Rel+3",category="Temporary Key Items"},
     [3374] = {id=3374,en="Mog Kupon A-Emp+2",ja="クーポンA-Emp+2",category="Temporary Key Items"},
-}, {"id", "en", "ja", "category"}
+}
 
 --[[
 Copyright 2013-2026 Windower

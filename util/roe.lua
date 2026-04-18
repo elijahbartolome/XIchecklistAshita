@@ -2,20 +2,14 @@ local roe_util = {}
 local roemap = require('../maps/roe_objectives')
 local roeextramap = require('../maps/roe_objectives_extra')
 local settings = require('settings')
+require('util/util')
 
-function roe_util.handle_roe_data(data)
+function roe_util.handle_roe_data(roe_data)
 	for id, roe in pairs(roemap) do
+		print(roe.name)
 		if (util.has_bit(roe_data, id)) then
-			roe_util.add_roe(id)
+			table.insert(playerroe, id)
 		end
-	end
-end
-
-function roe_util.add_roe(id)
-	if (not (playerroe[tostring(id)] == true)) then
-		playerroe[tostring(id)] = true
-		settings.save(playerroe)
-		--util.addon_log('RoE Completed: ' .. roemap[id].name)
 	end
 end
 
@@ -27,13 +21,13 @@ function roe_util.log_roe()
 		total = total+1
 		local completion = false
 		if (roeextramap[key]) then hiddentotal = hiddentotal+1 end
-		if (playerroe[tostring(key)] == true) then
+		if table_contains(playerroe, key)  then
 			complete = complete+1
 			completion = true
 			if (roeextramap[key]) then hiddencomplete = hiddencomplete+1 end
 		end
-		if (not roeextramap:contains(key)) then
-			table.insert(output_list, util.list_item(nil, roemap[key].name, completion))
+		if (not table_contains(roeextramap, key)) then
+			table.insert(output_list, util.list_item(nil, roe.name, completion))
 		end
 		
 	end

@@ -1,4 +1,4 @@
-return S{
+return {
 	
 	-- Non-player KIs
 	347, -- Dynamis Debugger

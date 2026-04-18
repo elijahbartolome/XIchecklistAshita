@@ -44,31 +44,33 @@ local maps = {
 	campaign = require('../maps/campaign'),
 }
 
-function quest_util.log_quests(quest_type)
-    if not quests.completed[quest_type] then return false end
-	if (quest_type == 'campaign1' or quest_type == 'campaign2') then
-		quest_type = 'campaign'
+function quest_util.log_quests(quest_area)
+    if not quests.completed[quest_area] then return false end
+	if (quest_area == 'campaign1' or quest_area == 'campaign2') then
+		quest_area = 'campaign'
 	end
-	if (quest_type == 'campaign') then
+	if (quest_area == 'campaign') then
 		if not quests.completed['campaign1'] then return false end
 		if not quests.completed['campaign2'] then return false end
-		quests.completed[quest_type] = quests.completed['campaign1'] .. quests.completed['campaign2']
+		--gotta insert a dummy value here before concatenating the two tables
+		quests.completed[quest_area] = util.table_concat(quests.completed['campaign1'], {67})
+		quests.completed[quest_area] = util.table_concat(quests.completed[quest_area], quests.completed['campaign2'])
 	end
     local complete,total = 0, 0
 	local output_list = {}
-	for key, name in pairs(maps[quest_type]) do
+	for key, name in pairs(maps[quest_area]) do
 		local mutualcompleted = false
 		local completion = false
-		if maps[quest_type][key] then
+		if maps[quest_area][key] then
 			total = total + 1
-            if util.has_bit(quests.completed[quest_type], key) then
+            if util.has_bit(quests.completed[quest_area], key) then
                 complete = complete + 1
 				completion = true
 			else
-				if (quests.mutual_exclusive[quest_type] and quests.mutual_exclusive[quest_type][key]) then -- check if mutual quests involved
+				if (quests.mutual_exclusive[quest_area] and quests.mutual_exclusive[quest_area][key]) then -- check if mutual quests involved
 					--total = total - quests.mutual_exclusive[quest_type]:length() + 1 -- avoid multiple counts
-					for alternative in pairs(quests.mutual_exclusive[quest_type]) do
-						if util.has_bit(quests.completed[quest_type], alternative) then
+					for alternative in pairs(quests.mutual_exclusive[quest_area]) do
+						if util.has_bit(quests.completed[quest_area], alternative) then
 							total = total - 1 --reduce total if alternative mutually exclusive quest is completed
 							mutualcompleted = true
 						end
@@ -76,41 +78,13 @@ function quest_util.log_quests(quest_type)
 				end
             end
 			if (not mutualcompleted) then
-				table.insert(output_list, util.list_item(quest_type, maps[quest_type][key], completion))
+				table.insert(output_list, util.list_item(quest_area, maps[quest_area][key], completion))
 			end
         end
 	end
-	playertracker[quest_type..'_completed'] = complete
-	playertracker[quest_type..'_total'] = total
+	playertracker[quest_area..'_completed'] = complete
+	playertracker[quest_area..'_total'] = total
 	return output_list
 end
 
---[[
-function quest_util.log_campaign()
-	quest_type = 'campaign'
-	local data = nil
-	if (quest_type == 'campaign') then
-		if not quests.completed['campaign1'] then return false end
-		if not quests.completed['campaign2'] then return false end
-		data = quests.completed['campaign1'] .. quests.completed['campaign2']
-		quests.completed[quest_type] = data
-	end
-	local complete,total = 0, 0
-	local output_list = {}
-	for id,name in pairs(maps.campaign) do
-		local completion = false
-		if maps.campaign[id] then
-			total = total + 1
-			if util.has_bit(data, id) then
-				complete = complete + 1
-				completion = true
-			end
-			table.insert(output_list, util.list_item(nil, name, completion))
-		end
-	end
-	playertracker['campaign_completed'] = complete
-	playertracker['campaign_total'] = total
-	return output_list
-end
---]]
 return quest_util

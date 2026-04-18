@@ -7,40 +7,42 @@ function util.addon_log(str)
 end
 
 function util.has_bit(data, position)
-    return data:unpack('q', math.floor(position/8)+1, position%8+1)
+    return data[position]
 end
 
-function util.bytes_to_table(str)
-    local t = {}
-    for i = 1, #str do
-        t[i - 1] = str:byte(i)
+function util.table_concat(t1, t2)
+    for i=1,#t2 do
+        t1[#t1+1] = t2[i]
     end
-    return t
+    return t1
 end
 
 function util.twobits_to_table(data)
 -- Extract 2-bit values into a table
 	local result = {}
-	for i = 1, #data do
-		local byte = data:byte(i)
-		-- Each byte contains 4 values (2 bits each)
-		for j = 0, 3 do
-			local shift = j * 2
-			local value = bit.band(bit.rshift(byte, shift), 0x03)
-			result[#result + 1] = value
+	for i = 1, #data, 2 do
+		local value = 0
+		for j = 1, 2 do
+			value = value + 2^(j - 1) * (data[i + j] and 1 or 0)
 		end
+		result[#result + 1] = value
 	end
 	return result
 end
 
 function util.fourbits_to_table(data)
     local result = {}
-    for i = 1, #data do
-        local byte = data:byte(i)
+    for i = 1, #data, 8 do
         -- lower 4 bits (bits 0–3)
-        local low  = bit.band(byte, 0x0F)
+		local low = 0
+		for j = 1, 4 do
+			low = low + 2^(j - 1) * (data[i + j] and 1 or 0)
+		end
         -- upper 4 bits (bits 4–7)
-        local high = bit.band(bit.rshift(byte, 4), 0x0F)
+        local high = 0
+		for j = 1, 4 do
+			high = high + 2^(j - 1) * (data[i + j + 4] and 1 or 0)
+		end
         -- (LSB first)
         result[#result + 1] = low
         result[#result + 1] = high
@@ -88,6 +90,9 @@ function util.table_to_clipboard(tbl)
 end
 
 function util.log_tablog(tbl, striplastbracket)
+	if (tbl == nil) then
+		return
+	end
 	for key, item in pairs(tbl) do
 		local text = item.text
 		text = text:gsub("\\cs%(%d+,%d+,%d+%)", "")

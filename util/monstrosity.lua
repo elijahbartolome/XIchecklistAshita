@@ -16,7 +16,7 @@ local totalspecies, obtainedspecies = 0, 0
 local totalracejobinstincts, obtainedracejobinstincts = 0, 0
 
 function mons_util.log_racejobinstincts()
-	if mons_util.racejobinstincts==nil then return end
+	if mons_util.racejobinstincts==nil or mons_util.racejobinstincts==0 then return end
 	local output_list = {}
 	local total, obtained = 0, 0
 	for id, name in pairs(map_racejobinstincts) do
@@ -37,7 +37,7 @@ function mons_util.log_monsterlevels()
 	if (mons_util.monster_levelspacket[1] == nil or mons_util.monster_levelspacket[2] == nil) then 
 		return
 	else 
-		mons_util.monster_levels = util.bytes_to_table(mons_util.monster_levelspacket[1] .. mons_util.monster_levelspacket[2])
+		mons_util.monster_levels = util.table_concat(mons_util.monster_levelspacket[1], mons_util.monster_levelspacket[2])
 	end
 	if mons_util.monster_levels==nil then return end
 	local output_list = {}
@@ -45,9 +45,9 @@ function mons_util.log_monsterlevels()
 	for id, monster in pairs(map_species) do
 		total = total+99
 		local completion = false
-		complete = complete + mons_util.monster_levels[id]
+		complete = complete + (mons_util.monster_levels[id] and 1 or 0)
 		if (mons_util.monster_levels[id] == 99) then completion = true end
-		table.insert(output_list, util.list_item(nil, 'Lv. ' .. mons_util.monster_levels[id] .. ' ' .. monster, completion)) -- add monster
+		table.insert(output_list, util.list_item(nil, 'Lv. ' .. (mons_util.monster_levels[id] and 1 or 0) .. ' ' .. monster, completion)) -- add monster
 	end
 	playertracker['MonsterLevels_completed'] = complete
 	playertracker['MonsterLevels_total'] = total	
@@ -55,7 +55,7 @@ function mons_util.log_monsterlevels()
 end
 
 function mons_util.log_variants()
-	if mons_util.variants_bitfield==nil then return end
+	if mons_util.variants_bitfield==nil or mons_util.variants_bitfield==0 then return end
 	local output_list = {}
 	local total, obtained = 0, 0
 	for id, name in pairs(map_species_variants) do
@@ -73,7 +73,7 @@ function mons_util.log_variants()
 end
 
 function mons_util.log_monsterinstincts()
-	if mons_util.monster_instincts==nil then return end
+	if mons_util.monster_instincts==nil or mons_util.monster_instincts==nil then return end
 	local output_list = {}
 	--local instincts_unlocks = util.twobits_to_table(mons_util.monster_instincts)
 	local total, obtained = 0, 0

@@ -1,4 +1,4 @@
-return S{
+return {
 	-- by kaytekat @ github
 	--GM
 	0, --N/A
