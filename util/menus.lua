@@ -322,7 +322,7 @@ end
 function menus_util.log_atmacitelevels()
 	output_list = {}
 	local total, complete = 0,0
-	for key, atmacite in pairs(menumaps.atmacite) do
+	for key, atmacite in ipairs(menumaps.atmacite) do
 		total = total+15
 		local completion = false
 		if (playertracker.atmacite_levels[tostring(key)] == 15) then
@@ -371,9 +371,9 @@ function menus_util.handle_titles_npc(e)
 end
 
 function menus_util.add_title(id)
-	local titles = require('res/titles')
-	if (not (playertitles[tostring(id)] == true)) then
-		playertitles[tostring(id)] = true
+	local titles = require('maps/titles')
+	if (not (playertitles[id] == true)) then
+		playertitles[id] = true
 		util.addon_log('Title added: ' .. titles[id].en)
 	end
 end
@@ -381,24 +381,26 @@ end
 function menus_util.log_titles()
 	output_list = {}
 	local total, complete = 0,0
-	local titles = require('res/titles')
-	for key, title in pairs(titles) do
+	local titles = require('maps/titles')
+	for key= 0,1150 do
 		total = total+1
 		local completion = false
 		local obtainmethod = ''
-		if (titles_howtoobtain[title.en]) then
-			obtainmethod = '\\cs(255,255,255) [' .. titles_howtoobtain[title.en] .. ']\\cr'
-		end
-		if (playertitles[tostring(key)] == true) then
-			complete = complete+1
-			completion = true
-		else
-			if (table_contains(titlesexclusions, key)) then
-				total = total - 1
+		if (titles[key]) then
+			if (titles_howtoobtain[titles[key].en]) then
+				obtainmethod = '\\cs(255,255,255) [' .. titles_howtoobtain[titles[key].en] .. ']\\cr'
 			end
-		end
-		if (not table_contains(titlesexclusions, key)) then  
-			table.insert(output_list, util.list_item(nil, titles[key].en, completion, obtainmethod))
+			if (playertitles[key] == true) then
+				complete = complete+1
+				completion = true
+			else
+				if (table_contains(titlesexclusions, key)) then
+					total = total - 1
+				end
+			end
+			if (not table_contains(titlesexclusions, key)) then  
+				table.insert(output_list, util.list_item(nil, titles[key].en, completion, obtainmethod))
+			end
 		end
 	end
 	playertracker['Titles_completed'] = complete
@@ -411,7 +413,7 @@ function menus_util.list_titles_bycontent()
 	for content, titles in pairs(titlescontnt) do
 		local total, complete = 0,0
 		local completion = false
-		for key, titleid in pairs(titles) do
+		for key, titleid in ipairs(titles) do
 			total = total+1
 			if (titlesexclusions[titleid] ~= nil) then total = total-1 end
 			if (playertitles[tostring(titleid)] == true) then

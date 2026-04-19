@@ -612,6 +612,7 @@ ashita.events.register('packet_in', 'incoming chunk', function(e)
 			local concatRoE = {}
 			for i=0,3 do	
 				util.table_concat(concatRoE, roe_data[i])
+				util.table_concat(concatRoE, {67})
 			end
 			roe_util.handle_roe_data(concatRoE)
 			roe_data = nil -- reset
@@ -622,7 +623,7 @@ ashita.events.register('packet_in', 'incoming chunk', function(e)
 	
 	-- do MMM
 	if e.id == 0x0AD then
-		mmm_util.handle_mmm_data(e.data)
+		mmm_util.handle_mmm_data(e)
 		tab_logs.mmmvouchers = mmm_util.log_vouchers()
 		tab_logs.mmmrunes = mmm_util.log_runes()
 		xichecklist_updatetabs('battlecontent')
@@ -819,7 +820,7 @@ end
 function check_keyitems(keyitemtype)
 	local output_list = T{}
 	local keyitem_exclusions = require('maps/keyitems_exclusions')
-	local keyitems = require('res/key_items')
+	local keyitems = require('maps/key_items')
 	local playerkeyitems = get_key_items()
 	local total, obtained = 0, 0
 	for id = 1,3374 do

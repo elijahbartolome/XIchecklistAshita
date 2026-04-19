@@ -3,9 +3,17 @@ local map_mmm = require('../maps/maps_mmm')
 local vouchers_unlocks = nil
 local runes_unlocks = nil
 
-function mmm_util.handle_mmm_data(data)
-	mmm_util.vouchers_unlocks = data:sub(0x04+1, 0x0B+1)
-	mmm_util.runes_unlocks = data:sub(0x0C+1, 0x4B+1)
+function mmm_util.handle_mmm_data(e)
+	local VoucherUnlocksField = {}
+	for i = 0,8 do
+		VoucherUnlocksField[i] = (ashita.bits.unpack_be(e.data_raw, 0x04, i, 1) == 1);
+	end
+	mmm_util.vouchers_unlocks = VoucherUnlocksField
+	local RuneUnlocksField = {}
+	for i = 0,99 do
+		RuneUnlocksField[i] = (ashita.bits.unpack_be(e.data_raw, 0x0C, i, 1) == 1);
+	end
+	mmm_util.runes_unlocks = RuneUnlocksField
 end
 
 function mmm_util.log_vouchers()
