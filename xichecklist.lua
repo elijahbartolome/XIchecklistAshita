@@ -211,8 +211,6 @@ defaulttab_logs = {
 	racejobinstincts = {},
 	monster_instincts = {},
 	
-	roe = {},
-	
 	mmmvouchers = {},
 	mmmrunes = {},
 	meeble_burrows = {},
@@ -415,7 +413,7 @@ ashita.events.register('packet_in', 'incoming chunk', function(e)
 		menus_util.handle_npc_menu(e)
 		xichecklist_updatemenulogs()
 	elseif e.id == 0x061 then
-		-- check player info (updated when openning menu)
+		-- check player info (updated when opening menu)
 		local title = struct.unpack('H', e.data, 0x44 + 0x01)
 		menus_util.add_title(title)
 		xichecklist_updatemenulogs()
@@ -599,6 +597,7 @@ ashita.events.register('command', 'checklist_command', function(e)
 			print(chat.header(addon.name):append(chat.message(chat.color1(261, 'Proto-Waypoint')..'-> any Proto-Waypoints')))
 			print(chat.header(addon.name):append(chat.message(chat.color1(261, 'Atmacite Levels')..'-> any Atmacite Refiner (Enrich Atmacite)')))
 			print(chat.header(addon.name):append(chat.message(chat.color1(261, 'Wing Skill')..'-> Nation Chocobo Stable kids')))
+			print(chat.header(addon.name):append(chat.message(chat.color1(261, 'Sheol Gaol')..'-> ??? in Rabao')))
 		elseif args[2] == 'show' then
 			trackermenusettings.visibility = {true,}
 		elseif args[2] == 'hide' then
