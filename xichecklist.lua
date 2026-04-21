@@ -426,7 +426,7 @@ ashita.events.register('packet_in', 'incoming chunk', function(e)
 	-- do RoE
 	if e.id == 0x112 then
 		if (not roe_data) then roe_data = {[0]=nil, [1]=nil, [2]=nil, [3]=nil} end
-		local port = struct.unpack('I', e.data, 0x84 + 0x01)
+		local port = struct.unpack('H', e.data, 0x84 + 0x01)
 		local RoEFlags = {}
 		for i = 0,1023 do
 			RoEFlags[i+1] = (ashita.bits.unpack_be(e.data_raw, 0x04, i, 1) == 1);
@@ -724,6 +724,9 @@ function addon_init()
 	player = AshitaCore:GetMemoryManager():GetParty():GetMemberIndex(0)
 	player_name = AshitaCore:GetMemoryManager():GetParty():GetMemberName(0)
 	if not player then return end
+	kiCheck = nil
+	mountCheck = nil
+	key_data = nil
 	updatemenulogs()
 end
 
