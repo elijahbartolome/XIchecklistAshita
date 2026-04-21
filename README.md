@@ -6,7 +6,7 @@
 | `/xic hide` | hide the UI |
 | `/xic show` | show the UI |
 | `/xic log <category>` | print <category> in chat log.<br>Example: `/xic log titles`<br>Available categories `titles` `monstrosity` `mmm` `meeble` `warps` `fish` `quests` (`sandoria` `bastok` `windurst` `jeuno` `ahturhgan` `crystalwar` `outlands` `other` `abyssea` `adoulin` `coalition` `campaign`)   |
-| `/xic showcomplete` | show completed objectives in green |
+| `/xic showcomplete` | toggle showing completed objectives in green |
 
 The following are updated by talking to NPCs (some require opening certain menus)  
 will be saved in config so only need to do it once (or when need to update)
