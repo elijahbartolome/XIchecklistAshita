@@ -282,10 +282,10 @@ roe_util = require('util/roe')
 mmm_util = require('util/mmm')
 menus_util = require('util/menus')
 
-function get_bits_be(data, start, n)
+function get_bits_be(data, startByte, startBit, n)
 	local result = {}
-	for i = 0,n-1 do
-		result[i+1] = (ashita.bits.unpack_be(data, start, i, 1) == 1);
+	for i = startBit, startBit+n-1 do
+		result[i+1-startBit] = (ashita.bits.unpack_be(data, startByte, i, 1) == 1);
 	end
 	return result
 end
@@ -330,37 +330,37 @@ ashita.events.register('packet_in', 'incoming chunk', function(e)
 		local log = quest_logs[type]
 		if log then
 			if ((type == 128)) then -- if Aht Urhgan Current Quests
-				local CurrentAhtUrhganQuests = get_bits_be(e.data_raw, 0x04, 128)
+				local CurrentAhtUrhganQuests = get_bits_be(e.data_raw, 0x04, 0, 128)
 				quests[log.type][log.area] = CurrentAhtUrhganQuests
 			elseif ((type == 192)) then -- if Aht Urhgan Completed Quests
-				local CompletedAhtUrhganQuests = get_bits_be(e.data_raw, 0x04, 128)
+				local CompletedAhtUrhganQuests = get_bits_be(e.data_raw, 0x04, 0, 128)
 				quests[log.type][log.area] = CompletedAhtUrhganQuests
 				tab_logs.quests[log.area] = quest_util.log_quests(log.area)
 			elseif (type == 208) then
-				quests.completed['sandoriamissions'] = get_bits_be(e.data_raw, 0x04, 64)
-				quests.completed['bastokmissions'] = get_bits_be(e.data_raw, 0x0C, 64)
-				quests.completed['windurstmissions'] = get_bits_be(e.data_raw, 0x14, 64)
-				quests.completed['zilartmissions'] = get_bits_be(e.data_raw, 0x1C, 64)
+				quests.completed['sandoriamissions'] = get_bits_be(e.data_raw, 0x04, 0, 64)
+				quests.completed['bastokmissions'] = get_bits_be(e.data_raw, 0x0C, 0, 64)
+				quests.completed['windurstmissions'] = get_bits_be(e.data_raw, 0x14, 0, 64)
+				quests.completed['zilartmissions'] = get_bits_be(e.data_raw, 0x1C, 0, 64)
 				tab_logs.quests['sandoriamissions'] = quest_util.log_quests('sandoriamissions')
 				tab_logs.quests['bastokmissions'] = quest_util.log_quests('bastokmissions')
 				tab_logs.quests['windurstmissions'] = quest_util.log_quests('windurstmissions')
 				tab_logs.quests['zilartmissions'] = quest_util.log_quests('zilartmissions')
-			elseif (p.Type == 216) then -- if TOAU, WOTG Completed Missions
-				quests.completed['ahturhganmissions'] = get_bits_be(e.data_raw, 0x04, 64)
-				quests.completed['wotgmissions'] = get_bits_be(e.data_raw, 0x0C, 64)
+			elseif (type == 216) then -- if TOAU, WOTG Completed Missions
+				quests.completed['ahturhganmissions'] = get_bits_be(e.data_raw, 0x04, 0, 64)
+				quests.completed['wotgmissions'] = get_bits_be(e.data_raw, 0x0C, 0, 64)
 				tab_logs.quests['ahturhganmissions'] = quest_util.log_quests('ahturhganmissions')
 				tab_logs.quests['wotgmissions'] = quest_util.log_quests('wotgmissions')
-			elseif (p.Type == 65534) then -- if TVR Current Missions
+			elseif (type == 65534) then -- if TVR Current Missions
 				tab_logs.quests['tvrmissions'] = quest_util.log_missions('tvrmissions', struct.unpack('I', e.data, 0x04 + 0x01))
-			elseif (p.Type == 65535) then -- if Other Current Missions
+			elseif (type == 65535) then -- if Other Current Missions
 				tab_logs.quests['copmissions'] = quest_util.log_missions('copmissions', struct.unpack('I', e.data, 0x10 + 0x01))
-				tab_logs.quests['acpmissions'] = quest_util.log_missions('acpmissions', struct.unpack('B', e.data, 0x18 + 0x01))
-				tab_logs.quests['mkdmissions'] = quest_util.log_missions('mkdmissions', struct.unpack('B', e.data, 0x18 + 0x01))
-				tab_logs.quests['asamissions'] = quest_util.log_missions('asamissions', struct.unpack('B', e.data, 0x19 + 0x01))
+				tab_logs.quests['acpmissions'] = quest_util.log_missions('acpmissions', get_bits_be(e.data_raw, 0x18, 0, 4))
+				tab_logs.quests['mkdmissions'] = quest_util.log_missions('mkdmissions', get_bits_be(e.data_raw, 0x18, 4, 4))
+				tab_logs.quests['asamissions'] = quest_util.log_missions('asamissions', get_bits_be(e.data_raw, 0x19, 0, 4))
 				tab_logs.quests['soamissions'] = quest_util.log_missions('soamissions', struct.unpack('I', e.data, 0x1C + 0x01))
 				tab_logs.quests['rovmissions'] = quest_util.log_missions('rovmissions', struct.unpack('I', e.data, 0x20 + 0x01))
 			else
-				local QuestFlags = get_bits_be(e.data_raw, 0x04, 256)
+				local QuestFlags = get_bits_be(e.data_raw, 0x04, 0, 256)
 				quests[log.type][log.area] = QuestFlags
 				if (log.area == 'campaign1' or log.area == 'campaign2') then
 					local campaign_check = quest_util.log_quests(log.area)
@@ -688,6 +688,33 @@ ashita.events.register('command', 'checklist_command', function(e)
 				elseif args[3]:lower() == 'fish' then
 					print(chat.header(addon.name):append(chat.message(('=== Type of Fish (%d/%d) ==='):format(tab_logs['fishes_completed'], tab_logs['fishes_total']))))
 					util.log_tablog(tab_logs.fishes)
+				elseif args[3]:lower() == 'missions' then
+					print(chat.header(addon.name):append(chat.message(('=== San d\'Oria Missions (%d/%d) ==='):format(playertracker['sandoriamissions_completed'], playertracker['sandoriamissions_total']))))
+					util.log_tablog(tab_logs.quests['sandoriamissions'])
+					print(chat.header(addon.name):append(chat.message(('Bastok Missions (%d/%d) ==='):format(playertracker['bastokmissions_completed'], playertracker['bastokmissions_total']))))
+					util.log_tablog(tab_logs.quests['bastokmissions'])
+					print(chat.header(addon.name):append(chat.message(('Windurst Missions (%d/%d) ==='):format(playertracker['windurstmissions_completed'], playertracker['windurstmissions_total']))))
+					util.log_tablog(tab_logs.quests['windurstmissions'])
+					print(chat.header(addon.name):append(chat.message(('Zilart Missions (%d/%d) ==='):format(playertracker['zilartmissions_completed'], playertracker['zilartmissions_total']))))
+					util.log_tablog(tab_logs.quests['zilartmissions'])
+					print(chat.header(addon.name):append(chat.message(('CoP Missions (%d/%d) ==='):format(playertracker['copmissions_completed'], playertracker['copmissions_total']))))
+					util.log_tablog(tab_logs.quests['copmissions'])
+					print(chat.header(addon.name):append(chat.message(('TOAU Missions (%d/%d) ==='):format(playertracker['ahturhganmissions_completed'], playertracker['ahturhganmissions_total']))))
+					util.log_tablog(tab_logs.quests['ahturhganmissions'])
+					print(chat.header(addon.name):append(chat.message(('WOTG Missions (%d/%d) ==='):format(playertracker['wotgmissions_completed'], playertracker['wotgmissions_total']))))
+					util.log_tablog(tab_logs.quests['wotgmissions'])
+					print(chat.header(addon.name):append(chat.message(('ACP Missions (%d/%d) ==='):format(playertracker['acpmissions_completed'], playertracker['acpmissions_total']))))
+					util.log_tablog(tab_logs.quests['acpmissions'])
+					print(chat.header(addon.name):append(chat.message(('MKD Missions (%d/%d) ==='):format(playertracker['mkdmissions_completed'], playertracker['mkdmissions_total']))))
+					util.log_tablog(tab_logs.quests['mkdmissions'])
+					print(chat.header(addon.name):append(chat.message(('ASA Missions (%d/%d) ==='):format(playertracker['asamissions_completed'], playertracker['asamissions_total']))))
+					util.log_tablog(tab_logs.quests['asamissions'])
+					print(chat.header(addon.name):append(chat.message(('SoA Missions (%d/%d) ==='):format(playertracker['soamissions_completed'], playertracker['soamissions_total']))))
+					util.log_tablog(tab_logs.quests['soamissions'])
+					print(chat.header(addon.name):append(chat.message(('RoV Missions (%d/%d) ==='):format(playertracker['rovmissions_completed'], playertracker['rovmissions_total']))))
+					util.log_tablog(tab_logs.quests['rovmissions'])
+					print(chat.header(addon.name):append(chat.message(('TVR Missions (%d/%d) ==='):format(playertracker['tvrmissions_completed'], playertracker['tvrmissions_total']))))
+					util.log_tablog(tab_logs.quests['tvrmissions'])
 				elseif args[3]:lower() == 'quests' then
 					print(chat.header(addon.name):append(chat.message(('=== San d\'Oria Quests (%d/%d) ==='):format(tab_logs['sandoria_completed'], tab_logs['sandoria_total']))))
 					util.log_tablog(tab_logs.quests['sandoria'])

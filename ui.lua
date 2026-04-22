@@ -1,7 +1,7 @@
 local imgui = require('imgui');
 local ui = {}
 local tabs = {
-    'Main', 'Quests', 'Campaign', 'Fish', 'Key Items', 'Magic', 'Warps', 'Monstrosity', 'Titles', 'RoE', 'Battle Content'
+    'Main', 'Missions', 'Quests', 'Campaign', 'Fish', 'Key Items', 'Magic', 'Warps', 'Monstrosity', 'Titles', 'RoE', 'Battle Content'
 }
 
 local function append_items(src)
@@ -63,6 +63,21 @@ local function update_maintab()
 	imgui.Text('======= RoE =======')
 	append_maintab('RoE %d/%d', tab_logs['RoE_completed'], tab_logs['RoE_total'])
 	
+	imgui.Text('======= Missions =======')
+	append_maintab('San d\'Oria Missions %d/%d', tab_logs['sandoriamissions_completed'], tab_logs['sandoriamissions_total'])
+	append_maintab('Bastok Missions %d/%d', tab_logs['bastokmissions_completed'], tab_logs['bastokmissions_total'])
+	append_maintab('Windurst Missions %d/%d', tab_logs['windurstmissions_completed'], tab_logs['windurstmissions_completed'])
+	append_maintab('Zilart Missions %d/%d', tab_logs['zilartmissions_completed'], tab_logs['zilartmissions_total'])
+	append_maintab('CoP Missions %d/%d', tab_logs['copmissions_completed'], tab_logs['copmissions_total'])
+	append_maintab('TOAU Missions %d/%d', tab_logs['ahturhganmissions_completed'], tab_logs['ahturhganmissions_total'])
+	append_maintab('WOTG Missions %d/%d', tab_logs['wotgmissions_completed'], tab_logs['wotgmissions_total'])
+	append_maintab('ACP Missions %d/%d', tab_logs['acpmissions_completed'], tab_logs['acpmissions_total'])
+	append_maintab('MKD Missions %d/%d', tab_logs['mkdmissions_completed'], tab_logs['mkdmissions_total'])
+	append_maintab('ASA Missions %d/%d', tab_logs['asamissions_completed'], tab_logs['asamissions_total'])
+	append_maintab('SoA Missions %d/%d', tab_logs['soamissions_completed'], tab_logs['soamissions_total'])
+	append_maintab('RoV Missions %d/%d', tab_logs['rovmissions_completed'], tab_logs['rovmissions_total'])
+	append_maintab('TVR Missions %d/%d', tab_logs['tvrmissions_completed'], tab_logs['tvrmissions_total'])
+
 	imgui.Text( '======= Quests & Ops =======')
 	append_maintab('Campaign Ops %d/%d', tab_logs['campaign_completed'], tab_logs['campaign_total'])
 	append_maintab('Bastok Quests %d/%d', tab_logs['bastok_completed'], tab_logs['bastok_total'])
@@ -146,6 +161,35 @@ end
 local function xichecklist_updatetabs(tab)
 	if not player then return false
 	
+	elseif (tab == 'Missions') then
+		-- log missions
+		append_header('San d\'Oria Missions (%d/%d)', tab_logs['sandoriamissions_completed'], tab_logs['sandoriamissions_total'])
+		append_items(tab_logs.quests['sandoriamissions'])
+		append_header('Bastok Missions (%d/%d)', tab_logs['bastokmissions_completed'], tab_logs['bastokmissions_total'])
+		append_items(tab_logs.quests['bastokmissions'])
+		append_header('Windurst Missions (%d/%d)', tab_logs['windurstmissions_completed'], tab_logs['windurstmissions_total'])
+		append_items(tab_logs.quests['windurstmissions'])
+		append_header('Zilart Missions (%d/%d)', tab_logs['zilartmissions_completed'], tab_logs['zilartmissions_total'])
+		append_items(tab_logs.quests['zilartmissions'])
+		append_header('CoP Missions (%d/%d)', tab_logs['copmissions_completed'], tab_logs['copmissions_total'])
+		append_items(tab_logs.quests['copmissions'])
+		append_header('TOAU Missions (%d/%d)', tab_logs['ahturhganmissions_completed'], tab_logs['ahturhganmissions_total'])
+		append_items(tab_logs.quests['ahturhganmissions'])
+		append_header('WOTG Missions (%d/%d)', tab_logs['wotgmissions_completed'], tab_logs['wotgmissions_total'])
+		append_items(tab_logs.quests['wotgmissions'])
+		append_header('ACP Missions (%d/%d)', tab_logs['acpmissions_completed'], tab_logs['acpmissions_total'])
+		append_items(tab_logs.quests['acpmissions'])
+		append_header('MKD Missions (%d/%d)', tab_logs['mkdmissions_completed'], tab_logs['mkdmissions_total'])
+		append_items(tab_logs.quests['mkdmissions'])
+		append_header('ASA Missions (%d/%d)', tab_logs['asamissions_completed'], tab_logs['asamissions_total'])
+		append_items(tab_logs.quests['asamissions'])
+		append_header('SoA Missions (%d/%d)', tab_logs['soamissions_completed'], tab_logs['soamissions_total'])
+		append_items(tab_logs.quests['soamissions'])
+		append_header('RoV Missions (%d/%d)', tab_logs['rovmissions_completed'], tab_logs['rovmissions_total'])
+		append_items(tab_logs.quests['rovmissions'])
+		append_header('TVR Missions (%d/%d)', tab_logs['tvrmissions_completed'], tab_logs['tvrmissions_total'])
+		append_items(tab_logs.quests['tvrmissions'])
+
 	elseif (tab == 'Quests') then
 		-- log quests
 		append_header( 'San d\'Oria Quests (%d/%d)', tab_logs['sandoria_completed'], tab_logs['sandoria_total'])

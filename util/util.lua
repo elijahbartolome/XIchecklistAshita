@@ -64,6 +64,14 @@ function util.twobits_to_table(data)
 	return result
 end
 
+function util.fourbits(data)
+	local result = 0
+	for i = 0, 3 do
+		result = result + 2^(i) * (data[i] and 1 or 0)
+	end
+	return result
+end
+
 function util.fourbits_to_table(data)
     local result = {}
     for i = 1, #data, 8 do

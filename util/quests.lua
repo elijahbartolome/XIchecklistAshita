@@ -98,6 +98,9 @@ end
 
 function quest_util.log_missions(mission_type, current_mission_id)
 	if (not quests.missions_map[mission_type]) then return false end
+	if (mission_type == 'acpmissions') or (mission_type == 'mkdmissions') or (mission_type == 'asamissions') then
+		current_mission_id = util.fourbits(current_mission_id)
+	end
 	if current_mission_id == 1000 then current_mission_id = 0 end
 	if current_mission_id < 0 then current_mission_id = current_mission_id + 2147483648 end
 	local complete,total = 0, 0
