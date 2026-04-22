@@ -5,7 +5,7 @@
 | `/xic help` | print help in chatlog |
 | `/xic hide` | hide the UI |
 | `/xic show` | show the UI |
-| `/xic log <category>` | print <category> in chat log.<br>Example: `/xic log titles`<br>Available categories `titles` `monstrosity` `mmm` `meeble` `warps` `fish` `quests` (`sandoria` `bastok` `windurst` `jeuno` `ahturhgan` `crystalwar` `outlands` `other` `abyssea` `adoulin` `coalition` `campaign`)   |
+| `/xic log <category>` | print <category> in chat log.<br>Example: `/xic log titles`<br>Available categories `missions` `titles` `monstrosity` `mmm` `meeble` `warps` `fish` `quests` (`sandoria` `bastok` `windurst` `jeuno` `ahturhgan` `crystalwar` `outlands` `other` `abyssea` `adoulin` `coalition` `campaign`)   |
 | `/xic showcomplete` | toggle showing completed objectives in green |
 
 The following are updated by talking to NPCs (some require opening certain menus)  
@@ -45,6 +45,7 @@ will be saved in config so only need to do it once (or when need to update)
 - Magic Spells `(White Magic / Black Magic / Summoner Pacts / Ninjutsu / Bard Songs / Blue Magic / Trusts)`
 - leveling related `(Merit / Job points / Master levels / Fishing Skill / Crafting Skill / Wing Skill)`
 - Sheol Gaol 
+- Missions
 
 ![screenshot](https://imgur.com/yyldUyv.png)
 
@@ -64,8 +65,9 @@ will be saved in config so only need to do it once (or when need to update)
 
 ### **Changes**:
 
+- 0.2.0 - missions support
 - 0.1.0 - release
 
 ## Credits
-Most of the code is based off HiPotionQ8's Windower addon XIchecklist
-Thanks to Thorny for providing code snippets to help guide the porting
+- Most of the code is based off HiPotionQ8's Windower addon XIchecklist
+- Thanks to Thorny for providing code snippets to help guide the porting
