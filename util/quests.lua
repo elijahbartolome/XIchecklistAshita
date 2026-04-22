@@ -1,6 +1,7 @@
 local quest_util = {}
 quests = {completed={},current={}}
 quests.mutual_exclusive = require('../maps/quests_mutual_exclusive')
+quests.missions_map = require('../maps/missions_map')
 
 _G.quest_logs = {
     [0x0070] = {type='current', area='other'},
@@ -27,6 +28,10 @@ _G.quest_logs = {
 	[0x0078] = {type='current', area='outlands'},
 	[0x0030] = {type='completed', area='campaign1'},
 	[0x0038] = {type='completed', area='campaign2'},
+	[0x00D0] = {type='completed', area='nationzilartmissions'},
+	[0x00D8] = {type='completed', area='toauwotgmissions'},
+	[0xFFFE] = {type='current', area='currenttvrmissions'},
+	[0xFFFF] = {type='current', area='currentothermissions'},
 }
 
 local maps = {
@@ -42,6 +47,12 @@ local maps = {
 	crystalwar = require('../maps/quests_crystalwar'),
 	outlands = require('../maps/quests_outlands'),
 	campaign = require('../maps/campaign'),
+	sandoriamissions = require('../maps/missions_sandoria'),
+	bastokmissions = require('../maps/missions_bastok'),
+	windurstmissions = require('../maps/missions_windurst'),
+	zilartmissions = require('../maps/missions_zilart'),
+	ahturhganmissions = require('../maps/missions_ahturhgan'),
+	wotgmissions = require('../maps/missions_wotg'),
 }
 
 function quest_util.log_quests(quest_area)
@@ -82,6 +93,26 @@ function quest_util.log_quests(quest_area)
 	end
 	tab_logs[quest_area..'_completed'] = complete
 	tab_logs[quest_area..'_total'] = total
+	return output_list
+end
+
+function quest_util.log_missions(mission_type, current_mission_id)
+	if (not quests.missions_map[mission_type]) then return false end
+	if current_mission_id == 1000 then current_mission_id = 0 end
+	if current_mission_id < 0 then current_mission_id = current_mission_id + 2147483648 end
+	local complete,total = 0, 0
+	local output_list = {}
+	for i, mission in ipairs(quests.missions_map[mission_type]) do
+		total = total+1
+		local completion = false
+		if (current_mission_id > mission.id) then
+			completion = true
+			complete = complete+1
+		end
+		table.insert(output_list, util.list_item(nil, mission.name, completion))
+	end
+	tab_logs[mission_type..'_completed'] = complete
+	tab_logs[mission_type..'_total'] = total
 	return output_list
 end
 

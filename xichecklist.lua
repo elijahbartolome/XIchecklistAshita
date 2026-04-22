@@ -91,6 +91,33 @@ defaultplayertracker = {
 -- UI DATA
 tab_logs = {
 	['mastery_rank'] = 0,
+		-- Missions
+	['bastokmissions_completed'] = 0,
+	['bastokmissions_total'] = 0,
+	['sandoriamissions_completed'] = 0,
+	['sandoriamissions_total'] = 0,
+	['windurstmissions_completed'] = 0,
+	['windurstmissions_total'] = 0,
+	['zilartmissions_completed'] = 0,
+	['zilartmissions_total'] = 0,
+	['copmissions_completed'] = 0,
+	['copmissions_total'] = 0,
+	['ahturhganmissions_completed'] = 0,
+	['ahturhganmissions_total'] = 0,
+	['wotgmissions_completed'] = 0,
+	['wotgmissions_total'] = 0,
+	['acpmissions_completed'] = 0,
+	['acpmissions_total'] = 0,
+	['mkdmissions_completed'] = 0,
+	['mkdmissions_total'] = 0,
+	['asamissions_completed'] = 0,
+	['asamissions_total'] = 0,
+	['soamissions_completed'] = 0,
+	['soamissions_total'] = 0,
+	['rovmissions_completed'] = 0,
+	['rovmissions_total'] = 0,
+	['tvrmissions_completed'] = 0,
+	['tvrmissions_total'] = 0,
 	-- Quests
 	['bastok_completed'] = 0,
 	['bastok_total'] = 0,
@@ -255,7 +282,13 @@ roe_util = require('util/roe')
 mmm_util = require('util/mmm')
 menus_util = require('util/menus')
 
-
+function get_bits_be(data, start, n)
+	local result = {}
+	for i = 0,n-1 do
+		result[i+1] = (ashita.bits.unpack_be(data, start, i, 1) == 1);
+	end
+	return result
+end
 
 ashita.events.register('packet_in', 'incoming chunk', function(e)
 	--mastery rank
@@ -297,23 +330,37 @@ ashita.events.register('packet_in', 'incoming chunk', function(e)
 		local log = quest_logs[type]
 		if log then
 			if ((type == 128)) then -- if Aht Urhgan Current Quests
-				local CurrentAhtUrhganQuests = {}
-				for i = 0,127 do
-					CurrentAhtUrhganQuests[i+1] = (ashita.bits.unpack_be(e.data_raw, 0x04, i, 1) == 1);
-				end
+				local CurrentAhtUrhganQuests = get_bits_be(e.data_raw, 0x04, 128)
 				quests[log.type][log.area] = CurrentAhtUrhganQuests
 			elseif ((type == 192)) then -- if Aht Urhgan Completed Quests
-				local CompletedAhtUrhganQuests = {}
-				for i = 0,127 do
-					CompletedAhtUrhganQuests[i+1] = (ashita.bits.unpack_be(e.data_raw, 0x04, i, 1) == 1);
-				end
+				local CompletedAhtUrhganQuests = get_bits_be(e.data_raw, 0x04, 128)
 				quests[log.type][log.area] = CompletedAhtUrhganQuests
 				tab_logs.quests[log.area] = quest_util.log_quests(log.area)
+			elseif (type == 208) then
+				quests.completed['sandoriamissions'] = get_bits_be(e.data_raw, 0x04, 64)
+				quests.completed['bastokmissions'] = get_bits_be(e.data_raw, 0x0C, 64)
+				quests.completed['windurstmissions'] = get_bits_be(e.data_raw, 0x14, 64)
+				quests.completed['zilartmissions'] = get_bits_be(e.data_raw, 0x1C, 64)
+				tab_logs.quests['sandoriamissions'] = quest_util.log_quests('sandoriamissions')
+				tab_logs.quests['bastokmissions'] = quest_util.log_quests('bastokmissions')
+				tab_logs.quests['windurstmissions'] = quest_util.log_quests('windurstmissions')
+				tab_logs.quests['zilartmissions'] = quest_util.log_quests('zilartmissions')
+			elseif (p.Type == 216) then -- if TOAU, WOTG Completed Missions
+				quests.completed['ahturhganmissions'] = get_bits_be(e.data_raw, 0x04, 64)
+				quests.completed['wotgmissions'] = get_bits_be(e.data_raw, 0x0C, 64)
+				tab_logs.quests['ahturhganmissions'] = quest_util.log_quests('ahturhganmissions')
+				tab_logs.quests['wotgmissions'] = quest_util.log_quests('wotgmissions')
+			elseif (p.Type == 65534) then -- if TVR Current Missions
+				tab_logs.quests['tvrmissions'] = quest_util.log_missions('tvrmissions', struct.unpack('I', e.data, 0x04 + 0x01))
+			elseif (p.Type == 65535) then -- if Other Current Missions
+				tab_logs.quests['copmissions'] = quest_util.log_missions('copmissions', struct.unpack('I', e.data, 0x10 + 0x01))
+				tab_logs.quests['acpmissions'] = quest_util.log_missions('acpmissions', struct.unpack('B', e.data, 0x18 + 0x01))
+				tab_logs.quests['mkdmissions'] = quest_util.log_missions('mkdmissions', struct.unpack('B', e.data, 0x18 + 0x01))
+				tab_logs.quests['asamissions'] = quest_util.log_missions('asamissions', struct.unpack('B', e.data, 0x19 + 0x01))
+				tab_logs.quests['soamissions'] = quest_util.log_missions('soamissions', struct.unpack('I', e.data, 0x1C + 0x01))
+				tab_logs.quests['rovmissions'] = quest_util.log_missions('rovmissions', struct.unpack('I', e.data, 0x20 + 0x01))
 			else
-				local QuestFlags = {}
-				for i = 0,255 do
-					QuestFlags[i+1] = (ashita.bits.unpack_be(e.data_raw, 0x04, i, 1) == 1);
-				end
+				local QuestFlags = get_bits_be(e.data_raw, 0x04, 256)
 				quests[log.type][log.area] = QuestFlags
 				if (log.area == 'campaign1' or log.area == 'campaign2') then
 					local campaign_check = quest_util.log_quests(log.area)

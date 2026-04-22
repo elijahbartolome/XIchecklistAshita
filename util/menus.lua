@@ -134,7 +134,7 @@ end
 
 function menus_util.handle_chatnachoq(e)
 	menu = get_menu_parameters(e)
-	local mazes = struct.unpack('I', e.data, 14)
+	local mazes = struct.unpack('I', e.data, 21)
 	playertracker['mmm_mazecount'] = mazes
 	
 	util.addon_log('Maze count: ' .. mazes)
