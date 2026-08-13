@@ -1,3 +1,4 @@
+-- Moblin Maze Mongers Vouchers / Runes
 return {
 	vouchers = {
 		[0] = 'Maze Voucher 01',

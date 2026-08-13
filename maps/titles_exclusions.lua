@@ -1,76 +1,75 @@
 return {
 	-- by kaytekat @ github
 	--GM
-	[0] = true, --N/A
+	0, --N/A
 	
 	--Never implemented
-	[4] = true, --Overlord Executioner
-	[6] = true, --Adamantking Killer
-	[8] = true, --Manifest Mauler
-	[12] = true, --Giant Killer
-	[175] = true, --Matchmaker
+	4, --Overlord Executioner
+	6, --Adamantking Killer
+	8, --Manifest Mauler
+	12, --Giant Killer
+	175, --Matchmaker
 	
 	--Most likely unimplemented
-	[377] = true, --Banneret
-	[525] = true, --High Roller
-	[526] = true, --Fortune's Favorite
+	377, --Banneret
+	525, --High Roller
+	526, --Fortune's Favorite
 
 	--Only available randomly, not saved
-	[405] = true, --Random Adventurer
-	[406] = true, --Irresponsible Adventurer
-	[407] = true, --Odorous Adventurer
-	[408] = true, --Insignificant Adventurer
+	405, --Random Adventurer
+	406, --Irresponsible Adventurer
+	407, --Odorous Adventurer
+	408, --Insignificant Adventurer
 
 	--Temporary ballista chevrons
-	[378] = true, --Gold Balli☆☆☆☆star
-	[379] = true, --Mythril Balli☆☆☆star
-	[380] = true, --Silver Balli☆☆star
-	[381] = true, --Bronze Balli☆star
-	[382] = true, --Searing★Star
-	[383] = true, --Striking★Star
-	[384] = true, --Soothing★Star
-	[385] = true, --Sable★Star
-	[386] = true, --Scarlet★Star
-	[387] = true, --Sonic★Star
-	[388] = true, --Saintly★Star
-	[389] = true, --Shadowy★Star
-	[390] = true, --Savage★Star
-	[391] = true, --Singing★Star
-	[392] = true, --Sniping★Star
-	[393] = true, --Slicing★Star
-	[394] = true, --Sneaking★Star
-	[395] = true, --Spearing★Star
-	[396] = true, --Summoning★Star
-	[437] = true, --Sapphire★Star
-	[438] = true, --Surging★Star
-	[439] = true, --Swaying★Star
-	[533] = true, --Sprightly★Star
-	[534] = true, --Sagacious★Star
-	[844] = true, --Spiritual★Star
-	[845] = true, --Stippling★Star
+	378, --Gold Balli☆☆☆☆star
+	379, --Mythril Balli☆☆☆star
+	380, --Silver Balli☆☆star
+	381, --Bronze Balli☆star
+	382, --Searing★Star
+	383, --Striking★Star
+	384, --Soothing★Star
+	385, --Sable★Star
+	386, --Scarlet★Star
+	387, --Sonic★Star
+	388, --Saintly★Star
+	389, --Shadowy★Star
+	390, --Savage★Star
+	391, --Singing★Star
+	392, --Sniping★Star
+	393, --Slicing★Star
+	394, --Sneaking★Star
+	395, --Spearing★Star
+	396, --Summoning★Star
+	437, --Sapphire★Star
+	438, --Surging★Star
+	439, --Swaying★Star
+	533, --Sprightly★Star
+	534, --Sagacious★Star
+	844, --Spiritual★Star
+	845, --Stippling★Star
 
 	--Unavailable ballista royale
-	[409] = true, --Final Balli☆☆☆☆star
-	[410] = true, --Balli☆☆☆☆star Royale
+	409, --Final Balli☆☆☆☆star
+	410, --Balli☆☆☆☆star Royale
 
 	--Effectively unavailable besieged BCNMs
-	[480] = true, --Subduer of the Mamool Ja
-	[481] = true, --Subduer of the Trolls
-	[482] = true, --Subduer of the Undead Swarm
+	480, --Subduer of the Mamool Ja
+	481, --Subduer of the Trolls
+	482, --Subduer of the Undead Swarm
 
 	--Currently bugged and do not save properly
-	[435] = true, --Disturber of Slumber
-	[436] = true, --Interrupter of Dreams
-	[737] = true, --Champion of the Dawn
-	[826] = true, --Fulmination Disruptor
+	435, --Disturber of Slumber
+	436, --Interrupter of Dreams
+	826, --Fulmination Disruptor
 
 	--Effectively exclusive with one another
-	[1120] = true, --Legendary Woodworker
-	[1121] = true, --Legendary Blacksmith
-	[1122] = true, --Legendary Goldsmith
-	[1123] = true, --Legendary Weaver
-	[1124] = true, --Legendary Tanner
-	[1125] = true, --Legendary Boneworker
-	[1126] = true, --Legendary Alchemist
-	[1127] = true, --Legendary Culinarian
+	1120, --Legendary Woodworker
+	1121, --Legendary Blacksmith
+	1122, --Legendary Goldsmith
+	1123, --Legendary Weaver
+	1124, --Legendary Tanner
+	1125, --Legendary Boneworker
+	1126, --Legendary Alchemist
+	1127, --Legendary Culinarian
 }

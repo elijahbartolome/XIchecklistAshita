@@ -1,8 +1,5 @@
 local mons_util = {}
-local map_species = require('../maps/monstrosity_species')
-local map_species_variants = require('../maps/monstrosity_species_variants')
-local map_racejobinstincts = require('../maps/monstrosity_racejobinstincts')
-local map_monsterinstincts = require('../maps/monstrosity_instincts')
+local maps = require('../maps/monstrosity')
 mons_util.monster_levelspacket = {
 	[1] = nil,
 	[2] = nil,
@@ -12,38 +9,41 @@ local racejobinstincts = nil
 local variants_bitfield = nil
 local monster_instincts = nil
 
-local totalspecies, obtainedspecies = 0, 0
-local totalracejobinstincts, obtainedracejobinstincts = 0, 0
-
-function mons_util.log_racejobinstincts()
-	if mons_util.racejobinstincts==nil or mons_util.racejobinstincts==0 then return end
+mons_util.log_racejobinstincts = function()
+	if mons_util.racejobinstincts==nil then return end
 	local output_list = {}
 	local total, obtained = 0, 0
-	for id, name in pairs(map_racejobinstincts) do
+	for id, name in pairs(maps.racejobinstincts) do
 		total = total+1
 		local completion = false
-		if util.has_bit(mons_util.racejobinstincts, id +1) then
+		if util.has_bit(mons_util.racejobinstincts, id) then
 			obtained = obtained+1
 			completion = true
 		end
 		table.insert(output_list, util.list_item(nil, name, completion))
 	end
-	tab_logs['Racejobinstinct_completed'] = obtained
-	tab_logs['Racejobinstinct_total'] = total	
-	return output_list
+	playertracker.racejobinstinct_completed = obtained
+	playertracker.racejobinstinct_total = total
+	tab_logs.racejobinstincts = {
+		name = tab_logs.racejobinstincts.name,
+		completed = obtained,
+		total = total,
+		items = output_list
+	}
+	--return output_list
 end
 
-function mons_util.log_monsterlevels()
+mons_util.log_monsterlevels = function()
 	if (mons_util.monster_levelspacket[1] == nil or mons_util.monster_levelspacket[2] == nil) then 
 		return
 	else 
-		mons_util.monster_levels = util.table_concat(mons_util.monster_levelspacket[1], mons_util.monster_levelspacket[2])
+		mons_util.monsterlevels = util.table_concat(mons_util.monster_levelspacket[1], mons_util.monster_levelspacket[2])
 	end
-	if mons_util.monster_levels==nil then return end
-	local monster_level_bytes = util.byte_to_table_reverse(mons_util.monster_levels)
+	if mons_util.monsterlevels==nil then return end
+	local monster_level_bytes = util.byte_to_table_reverse(mons_util.monsterlevels)
 	local output_list = {}
 	local total, complete = 0, 0
-	for id, monster in pairs(map_species) do
+	for id, monster in pairs(maps.species) do
 		total = total+99
 		local completion = false
 		local monster_level = 0
@@ -56,18 +56,24 @@ function mons_util.log_monsterlevels()
 		end
 		complete = complete + monster_level
 		if (monster_level == 99) then completion = true end
-		table.insert(output_list, util.list_item(nil, 'Lv. ' .. (monster_level) .. ' ' .. monster, completion)) -- add monster
+		table.insert(output_list, util.list_item(nil, 'Lv. ' .. monster_level .. ' ' .. monster, completion)) -- add monster
 	end
-	tab_logs['MonsterLevels_completed'] = complete
-	tab_logs['MonsterLevels_total'] = total	
-	return output_list
+	playertracker.monsterlevels_completed = complete
+	playertracker.monsterlevels_total = total
+	tab_logs.monsterlevels = {
+		name = tab_logs.monsterlevels.name,
+		completed = complete,
+		total = total,
+		items = output_list
+	}
+	--return output_list
 end
 
-function mons_util.log_variants()
-	if mons_util.variants_bitfield==nil or mons_util.variants_bitfield==0 then return end
+mons_util.log_variants = function()
+	if mons_util.variants_bitfield==nil then return end
 	local output_list = {}
 	local total, obtained = 0, 0
-	for id, name in pairs(map_species_variants) do
+	for id, name in pairs(maps.species_variants) do
 		total = total+1
 		local completion = false
 		if util.has_bit(mons_util.variants_bitfield, (id-256)) then
@@ -76,35 +82,46 @@ function mons_util.log_variants()
 		end
 		table.insert(output_list, util.list_item(nil, name, completion))
 	end
-	tab_logs['MonsterVariants_completed'] = obtained
-	tab_logs['MonsterVariants_total'] = total	
-	return output_list
+	playertracker.monstervariants_completed = obtained
+	playertracker.monstervariants_total = total
+	tab_logs.monstervariants = {
+		name = tab_logs.monstervariants.name,
+		completed = obtained,
+		total = total,
+		items = output_list
+	}
+	--return output_list
 end
 
-function mons_util.log_monsterinstincts()
-	if mons_util.monster_instincts==nil or mons_util.monster_instincts==nil then return end
+mons_util.log_monsterinstincts = function()
+	if mons_util.monsterinstincts==nil then return end
 	local output_list = {}
-	--local instincts_unlocks = util.twobits_to_table(mons_util.monster_instincts)
+	--local instincts_unlocks = util.twobits_to_table(mons_util.monsterinstincts)
 	local total, obtained = 0, 0
-	for table_id, unlocked_level in pairs(mons_util.monster_instincts) do
+	for table_id, unlocked_level in pairs(mons_util.monsterinstincts) do
 		--total = total+3
-		local instinct_index_base = 3 * (table_id)
+		local instinct_index_base = 3 * (table_id - 1)
 		for instinct_index=1, 3 do
 			local completion = false
-			if (map_monsterinstincts[instinct_index_base+instinct_index]) then
+			if (maps.monsterinstincts[instinct_index_base+instinct_index]) then
 				total = total+1
 				if (unlocked_level >= instinct_index) then
 					obtained = obtained+1
 					completion = true
 				end
-				table.insert(output_list, util.list_item(nil, map_monsterinstincts[instinct_index_base+instinct_index], completion))
+				table.insert(output_list, util.list_item(nil, maps.monsterinstincts[instinct_index_base+instinct_index], completion))
 			end
-
 		end
 	end
-	tab_logs['MonsterInsincts_completed'] = obtained
-	tab_logs['MonsterInsincts_total'] = total	
-	return output_list
+	playertracker.monsterinsincts_completed = obtained
+	playertracker.monsterinsincts_total = total
+	tab_logs.monsterinstincts = {
+		name = tab_logs.monsterinstincts.name,
+		completed = obtained,
+		total = total,
+		items = output_list
+	}
+	--return output_list
 end
 
 return mons_util

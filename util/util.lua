@@ -2,11 +2,15 @@ local util = {}
 local bit = require('bit')
 local chat = require('chat')
 
-function util.addon_log(str)
+function util.table_contains(tbl, x)
+    return tbl[x]
+end
+
+util.addon_log = function(str)
     print(chat.header(addon.name):append(str))
 end
 
-function util.has_bit(data, position)
+util.has_bit = function(data, position)
     return data[position]
 end
 
@@ -27,7 +31,7 @@ function util.table_concat(t1, t2)
     return t1
 end
 
-function util.byte_to_table(data)
+util.bytes_to_table = function(str)
 	local result = {}
 	for i = 1, #data, 8 do
 		local value = 0
@@ -39,7 +43,7 @@ function util.byte_to_table(data)
 	return result
 end
 
-function util.byte_to_table_reverse(data)
+util.byte_to_table_reverse = function(data)
 	local result = {}
 	for i = 1, #data, 8 do
 		local value = 0
@@ -51,7 +55,7 @@ function util.byte_to_table_reverse(data)
 	return result
 end
 
-function util.twobits_to_table(data)
+util.twobits_to_table = function(data)
 -- Extract 2-bit values into a table
 	local result = {}
 	for i = 1, #data, 2 do
@@ -64,7 +68,7 @@ function util.twobits_to_table(data)
 	return result
 end
 
-function util.fourbits(data)
+util.fourbits = function(data)
 	local result = 0
 	for i = 0, 3 do
 		result = result + 2^(i) * (data[i] and 1 or 0)
@@ -72,7 +76,15 @@ function util.fourbits(data)
 	return result
 end
 
-function util.fourbits_to_table(data)
+util.sixteenbits = function(data)
+	local result = 0
+	for i = 0, 15 do
+		result = result + 2^(i) * (data[i] and 1 or 0)
+	end
+	return result
+end
+
+util.fourbits_to_table = function(data)
     local result = {}
     for i = 1, #data, 8 do
         -- lower 4 bits (bits 0–3)
@@ -92,11 +104,42 @@ function util.fourbits_to_table(data)
     return result
 end
 
-function util.cleanspaces(str)
+util.cleanspaces = function(str)
     return str:gsub(" ", "_")
 end
 
-function util.list_item(category, text, completed, obtainmethod)
+function util.keyset(tbl)
+	local keyset={}
+	local n=0
+
+	for k,v in pairs(tbl) do
+		n=n+1
+		keyset[n]=k
+	end
+	return keyset
+end
+
+function util.filter(f, x)
+
+	assert(f and x and #x > 0)
+	assert(type(f) == 'function')
+
+	local aux = {}
+	for i = 1, #x do
+		if f(x[i]) then table.insert(aux,x[i]) end
+	end
+
+	return aux
+end
+
+function util.Set (list)
+  local set = {}
+  for _, l in ipairs(list) do set[l] = true end
+  return set
+end
+
+
+util.list_item = function(category, text, completed, obtainmethod)
 	if (completed ~= true) then local completed = false end
 	if (text == nil) then return end
 	local item = {
@@ -108,19 +151,19 @@ function util.list_item(category, text, completed, obtainmethod)
 	return item
 end
 
-function util.totalpoints()
+util.totalpoints = function()
 	local completed, total = 0,0
-	for key, value in pairs(tab_logs) do
+	for key, value in pairs(playertracker) do
 		if (key:sub(-10) == "_completed" and type(value) == "number") then
 			completed = completed + value
 		elseif (key:sub(-6) == "_total" and type(value) == "number") then
 			total = total + value
 		end
 	end
-	return (completed - tab_logs['Jobpoints_completed']), (total - tab_logs['Jobpoints_total'])
+	return completed, total
 end
 
-function util.table_to_clipboard(tbl)
+util.table_to_clipboard = function(tbl)
 	local result = ""
     for i = 1, #tbl do
 		local text = tostring(tbl[i])
@@ -131,7 +174,7 @@ function util.table_to_clipboard(tbl)
     return result
 end
 
-function util.log_tablog(tbl, striplastbracket)
+util.log_tablog = function(tbl, striplastbracket)
 	if (tbl == nil) then
 		return
 	end
