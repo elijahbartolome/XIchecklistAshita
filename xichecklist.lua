@@ -994,7 +994,7 @@ ashita.events.register('command', 'checklist_command', function(e)
 				elseif args[3]:lower() == 'meeble' then
 					print(chat.header(addon.name):append(chat.message(('=== Meeble Burrows (%d/%d) ==='):format(playertracker.meebleburrows_completed, playertracker.meebleburrows_total))))
 					util.log_tablog(tab_logs.meeble_burrows.items)
-				elseif arg[3]:lower() == 'zones' then
+				elseif args[3]:lower() == 'zones' then
 					print(chat.header(addon.name):append(chat.message(('=== Zones (%d/%d) ==='):format(playertracker.zones_completed, playertracker.zones_total))))
 					util.log_tablog(tab_logs.zones.items)
 				elseif args[3]:lower() == 'warps' then
@@ -1077,11 +1077,11 @@ ashita.events.register('command', 'checklist_command', function(e)
 				elseif util.table_contains(quests_location, args[3]) then
 					print(chat.header(addon.name):append(chat.message(('=== '.. args[3] ..' (%d/%d) ==='):format(playertracker[args[3]..'_completed'], playertracker[args[3]..'_total']))))
 					util.log_tablog(tab_logs[args[3]])
-				elseif (args[3] == 'main') or (args[3] == 'summary') then
-				for key, item in ipairs(tabs[1].items) do
-					local text = item.text
-					print(chat.header(addon.name):append(chat.message((text))))
-				end
+				--[[elseif (args[3] == 'main') or (args[3] == 'summary') then
+					for key, item in ipairs(tabs[1].items) do
+						local text = item.text
+						print(chat.header(addon.name):append(chat.message((text))))
+					end]]
 				elseif (args[3] == 'sheol') or (args[3] == 'odyssey') then
 					print(chat.header(addon.name):append(chat.message(('=== Sheol A (%d/%d) ==='):format(playertracker.sheola_completed, playertracker.sheola_total))))
 					util.log_tablog(tab_logs.sheola.items)
@@ -1093,7 +1093,7 @@ ashita.events.register('command', 'checklist_command', function(e)
 					util.log_tablog(tab_logs.sheolgaol.items)
 				elseif tab_logs[args[3]] then
 					if not (args[3] == 'titles_by_content') then
-						print(chat.header(addon.name):append(chat.message(('=== '.. tab_logs[arg[2]].name .. ' (%d/%d) ==='):format(playertracker[arg[2]..'_completed'], playertracker[arg[2]..'_total']))))
+						print(chat.header(addon.name):append(chat.message(('=== '.. tab_logs[args[3]].name .. ' (%d/%d) ==='):format(playertracker[args[3]..'_completed'], playertracker[args[3]..'_total']))))
 					end
 					util.log_tablog(tab_logs[args[3]].items)
 				end
