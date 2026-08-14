@@ -1077,11 +1077,19 @@ ashita.events.register('command', 'checklist_command', function(e)
 				elseif util.table_contains(quests_location, args[3]) then
 					print(chat.header(addon.name):append(chat.message(('=== '.. args[3] ..' (%d/%d) ==='):format(playertracker[args[3]..'_completed'], playertracker[args[3]..'_total']))))
 					util.log_tablog(tab_logs[args[3]])
-				--[[elseif (args[3] == 'main') or (args[3] == 'summary') then
-					for key, item in ipairs(tabs[1].items) do
-						local text = item.text
-						print(chat.header(addon.name):append(chat.message((text))))
-					end]]
+				elseif (args[3] == 'main') or (args[3] == 'summary') then
+					print(chat.header(addon.name):append(chat.message((('Mastery Rank: %d'):format(playertracker.mastery_rank)))))
+					print(chat.header(addon.name):append(chat.message((('Checklist Progress %d/%d'):format(util.totalpoints())))))
+
+					print(chat.header(addon.name):append(chat.message((('======= General =======')))))
+					print(chat.header(addon.name):append(chat.message((('RoE %d/%d'):format(playertracker.roe_completed, playertracker.roe_total)))))
+					print(chat.header(addon.name):append(chat.message((('Zones visited %d/%d'):format(playertracker.zones_completed, playertracker.zones_total)))))
+					print(chat.header(addon.name):append(chat.message((('Titles %d/%d'):format(playertracker.Titles_completed, playertracker.Titles_total)))))
+					print(chat.header(addon.name):append(chat.message((('Missions %d/%d'):format(playertracker.sandoriamissions_completed+playertracker.bastokmissions_completed+playertracker.windurstmissions_completed+playertracker.zilartmissions_completed+playertracker.copmissions_completed+playertracker.ahturhganmissions_completed+playertracker.assaults_completed+playertracker.wotgmissions_completed+playertracker.acpmissions_completed+playertracker.mkdmissions_completed+playertracker.asamissions_completed+playertracker.soamissions_completed+playertracker.rovmissions_completed+playertracker.tvrmissions_completed+playertracker.campaign_completed, playertracker.sandoriamissions_total+playertracker.bastokmissions_total+playertracker.windurstmissions_total+playertracker.zilartmissions_total+playertracker.copmissions_total+playertracker.ahturhganmissions_total+playertracker.assaults_total+playertracker.wotgmissions_total+playertracker.acpmissions_total+playertracker.mkdmissions_total+playertracker.asamissions_total+playertracker.soamissions_total+playertracker.rovmissions_total+playertracker.tvrmissions_total+playertracker.campaign_total)))))
+					print(chat.header(addon.name):append(chat.message((('Quests %d/%d'):format(playertracker.bastok_completed+playertracker.sandoria_completed+playertracker.windurst_completed+playertracker.jeuno_completed+playertracker.ahturhgan_completed+playertracker.crystalwar_completed+playertracker.outlands_completed+playertracker.other_completed+playertracker.abyssea_completed+playertracker.adoulin_completed+playertracker.coalition_completed, playertracker.bastok_total+playertracker.sandoria_total+playertracker.windurst_total+playertracker.jeuno_total+playertracker.ahturhgan_total+playertracker.crystalwar_total+playertracker.outlands_total+playertracker.other_total+playertracker.abyssea_total+playertracker.adoulin_total+playertracker.coalition_total)))))
+					print(chat.header(addon.name):append(chat.message((('Magic %d/%d'):format(playertracker.WhiteMagic_completed+playertracker.BlackMagic_completed+playertracker.SummonerPact_completed+playertracker.Ninjutsu_completed+playertracker.BardSong_completed+playertracker.BlueMagic_completed+playertracker.Geomancy_completed+playertracker.Trust_completed, playertracker.WhiteMagic_total+playertracker.BlackMagic_total+playertracker.SummonerPact_total+playertracker.Ninjutsu_total+playertracker.BardSong_total+playertracker.BlueMagic_total+playertracker.Geomancy_total+playertracker.Trust_total)))))
+					print(chat.header(addon.name):append(chat.message((('Warps %d/%d'):format(playertracker.homepoints_completed+playertracker.survivalguides_completed+playertracker.waypoints_completed+playertracker.telepoints_completed+playertracker.cavernousmaws_completed+playertracker.lycopodium_completed+playertracker.eschanportals_completed+playertracker.outposts_completed+playertracker.protowaypoints_completed+playertracker.abysseaconflux_completed, playertracker.homepoints_total+playertracker.survivalguides_total+playertracker.waypoints_total+playertracker.telepoints_total+playertracker.cavernousmaws_total+playertracker.lycopodium_total+playertracker.eschanportals_total+playertracker.outposts_total+playertracker.protowaypoints_total+playertracker.abysseaconflux_total)))))
+
 				elseif (args[3] == 'sheol') or (args[3] == 'odyssey') then
 					print(chat.header(addon.name):append(chat.message(('=== Sheol A (%d/%d) ==='):format(playertracker.sheola_completed, playertracker.sheola_total))))
 					util.log_tablog(tab_logs.sheola.items)
