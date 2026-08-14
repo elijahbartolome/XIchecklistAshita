@@ -552,7 +552,7 @@ ashita.events.register('packet_in', 'incoming chunk', function(e)
 				InstinctBitfield[i+1] = (ashita.bits.unpack_be(e.data_raw, 0x1c, i, 1) == 1);
 			end
 			mons_util.monster_levelspacket[1] = MonsterLevelCharField
-			mons_util.monster_instincts = util.twobits_to_table(InstinctBitfield)
+			mons_util.monsterinstincts = util.twobits_to_table(InstinctBitfield)
 			mons_util.log_monsterlevels()
 			mons_util.log_monsterinstincts()
 		end
@@ -704,7 +704,7 @@ log_keyitems = function()
 		['Abyssea'] = {total=0, completed=0, output_list={}}
 	}
 	for id, _ in pairs(keyitemids) do
-		local keyitem_name = AshitaCore:GetResourceManager():GetString('keyitems.names', id)
+		local keyitem_name = AshitaCore:GetResourceManager():GetString('keyitems.names', id):gsub("[^\x00-\x7F]", "")
 		local keyitemtype = keyitems[id].category
 		if keyitemtypeTracker[keyitemtype] then
 			keyitemtypeTracker[keyitemtype].total = keyitemtypeTracker[keyitemtype].total + 1
@@ -839,7 +839,7 @@ log_corsairrolls = function()
 	local job_abilities = require('maps/job_abilities')
 	local playerinfo = AshitaCore:GetMemoryManager():GetPlayer()
 
-	for id, _ in ipairs(corsairrollsids) do
+	for id, _ in pairs(corsairrollsids) do
 		local completion = false
 		total = total + 1
 		if (playerinfo:HasAbility(id)) or (playertracker.corsairrolls[id] == true) then

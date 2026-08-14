@@ -16,7 +16,7 @@ mons_util.log_racejobinstincts = function()
 	for id, name in pairs(maps.racejobinstincts) do
 		total = total+1
 		local completion = false
-		if util.has_bit(mons_util.racejobinstincts, id) then
+		if util.has_bit(mons_util.racejobinstincts, id+1) then
 			obtained = obtained+1
 			completion = true
 		end
@@ -44,7 +44,7 @@ mons_util.log_monsterlevels = function()
 	local output_list = {}
 	local total, complete = 0, 0
 	for id, monster in pairs(maps.species) do
-		total = total+99
+		total = total+1
 		local completion = false
 		local monster_level = 0
 		if (id ~= 254 and id ~= 255) then
@@ -54,7 +54,7 @@ mons_util.log_monsterlevels = function()
 		elseif (id == 255) then
 			monster_level = monster_level_bytes[130]
 		end
-		complete = complete + monster_level
+		complete = complete + math.floor(monster_level/99)
 		if (monster_level == 99) then completion = true end
 		table.insert(output_list, util.list_item(nil, 'Lv. ' .. monster_level .. ' ' .. monster, completion)) -- add monster
 	end
@@ -100,7 +100,7 @@ mons_util.log_monsterinstincts = function()
 	local total, obtained = 0, 0
 	for table_id, unlocked_level in pairs(mons_util.monsterinstincts) do
 		--total = total+3
-		local instinct_index_base = 3 * (table_id - 1)
+		local instinct_index_base = 3 * (table_id)
 		for instinct_index=1, 3 do
 			local completion = false
 			if (maps.monsterinstincts[instinct_index_base+instinct_index]) then

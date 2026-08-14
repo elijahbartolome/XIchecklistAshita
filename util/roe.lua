@@ -61,8 +61,8 @@ roe_util.log_roe = function(roe_data)
 	playertracker.roe_total = total - hiddentotal
 	tab_logs.roe = {
 		name = tab_logs.roe.name,
-		completed = complete,
-		total = total,
+		completed = complete - hiddencomplete,
+		total = total - hiddentotal,
 		items = output_list
 	}
 end

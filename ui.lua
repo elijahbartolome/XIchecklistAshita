@@ -137,7 +137,7 @@ local function append_items(src)
 			menucolor = {0.0, 1.0, 0.0, 1.0}
 		end
 		if item.obtainmethod ~= nil then 
-			text = text..item.obtainmethod
+			text = text.." -> "..item.obtainmethod
 		end
 		if (display == true) then
 			imgui.TextColored(menucolor, text)
@@ -261,7 +261,7 @@ render_maintab = function()
 	append_maintab('Fishes Caught %d/%d', playertracker.fishes_completed, 164)
 	append_addonhelp( 'You must talk to Katsunaga @ Mhuaura (H-9) (Menu: Types of fishes caught)', playertracker.talk_to_npc.katsunaga)
 	append_maintab('Ergon Locus %d/%d', playertracker.ergonlocus_completed, playertracker.ergonlocus_total)
-	append_addonhelp('You must talk to Rienne @ (50,150,255)Western Adoulin (J-9)', playertracker.talk_to_npc.ergonlocus)
+	append_addonhelp('You must talk to Rienne @ Western Adoulin (J-9)', playertracker.talk_to_npc.ergonlocus)
 
 	imgui.Text( '======= Monstrosity =======')
 	append_maintab('Monster Levels Maxed %d/%d', playertracker.monsterlevels_completed, playertracker.monsterlevels_total)

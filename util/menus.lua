@@ -815,7 +815,7 @@ menus_util.menu_npcs = {
 	
 	-- Abyssea Veridical Conflux
 	["Veridical Conflux #01"] = {
-	zoneid={15, 45, 132, 215, 216, 217, 218, 253, 254},
+	zoneid={[15]=true, [45]=true, [132]=true, [215]=true, [216]=true, [217]=true, [218]=true, [253]=true, [254]=true},
 	menuid={[2132] = true}, menu_function=menus_util.handle_abyssea_conflux},
 }
 return menus_util
