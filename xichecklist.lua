@@ -842,7 +842,7 @@ log_corsairrolls = function()
 	for id, _ in pairs(corsairrollsids) do
 		local completion = false
 		total = total + 1
-		if (playerinfo:HasAbility(id) == true) or (playertracker.corsairrolls[id] == true) then
+		if (playerinfo:HasAbility(id+0x200) == true) or (playertracker.corsairrolls[id] == true) then
 			-- roll learned
 			obtained = obtained + 1
 			playertracker.corsairrolls[id] = true
