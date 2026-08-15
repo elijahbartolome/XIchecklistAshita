@@ -4,14 +4,14 @@ local maps = require('../maps/warps')
 local zones = require('../maps/zones')
 
 local warps_bytes = {
-	homepoints = {0x08+1, 0x17+1},
-	survivalguides = {0x18+1, 0x27+1},
-	waypoints = {0x28+1 , 0x37+1},
-	telepoints = {0x38+1, 0x3B+1},
-	cavernousmaws = {0x3C+1, 0x3F+1},
-	lycopodium = {0x3C+1, 0x3F+1},
-	eschanportals = {0x40+1, 0x44+1},
-	unknownwarps = {0x3C+1, 0x3F+1},
+	homepoints = {0x08, 0x17},
+	survivalguides = {0x18, 0x27},
+	waypoints = {0x28 , 0x37},
+	telepoints = {0x38, 0x3B},
+	cavernousmaws = {0x3C, 0x3F},
+	lycopodium = {0x3C, 0x3F},
+	eschanportals = {0x40, 0x44},
+	unknownwarps = {0x3C, 0x3F},
 }
 
 function warps_util.checkwarps(warptype)
@@ -36,14 +36,19 @@ end
 
 warps_util.log_warps = function(warptype)
 	if warps_util.warps_data == nil then return end
-	local subdata = warps_util.warps_data:sub(unpack(warps_bytes[warptype]))
+	local start = warps_bytes[warptype][1]
+	local len = warps_bytes[warptype][2] - warps_bytes[warptype][1]
+	local subdata = {}
+	for i = 0, (len * 8) - 1 do
+		subdata[i+1] = (ashita.bits.unpack_be(warps_util.warps_data, start, i, 1) == 1);
+	end
 	local total, complete = 0, 0
 	output_list = {}
 	-- check for obtained warp
 	for index, name in pairs(maps[warptype]) do
 		total = total+1
 		local completion = false
-		if util.has_bit(subdata, index) then
+		if util.has_bit(subdata, index+1) then
 			complete = complete+1
 			completion = true
 		end
@@ -59,16 +64,19 @@ warps_util.log_warps = function(warptype)
 	}
 end
 
-warps_util.log_visitedzones = function(data)
-	local subdata = data:sub(5, 52)
+warps_util.log_visitedzones = function(e)
+	local subdata = {}
+	for i = 0, 375 do
+		subdata[i+1] = (ashita.bits.unpack_be(e.data_raw, 0x04, i, 1) == 1);
+	end
 	local total, complete = 0, 0
-	local zones_exclusion = {0, 131} -- unknown and jail
+	local zones_exclusion = {[0]=true, [131]=true} -- unknown and jail
 	local output_list = {}
 	for index, zone in pairs(zones) do
 		total = total+1
 		local completion = false
 		if util.table_contains(zones_exclusion, zone.id) then total=total-1 end
-		if util.has_bit(subdata, zone.id) and not util.table_contains(zones_exclusion, zone.id) then
+		if util.has_bit(subdata, zone.id+1) and not util.table_contains(zones_exclusion, zone.id) then
 			complete = complete+1
 			completion = true
 		end
@@ -91,14 +99,19 @@ end
 
 warps_util.log_unknownwarps = function(warptype) -- copy of log_warps, but avoiding counting this category in total checklist progress, until we figure out what they mean
 	if warps_util.warps_data == nil then return end
-	local subdata = warps_util.warps_data:sub(unpack(warps_bytes[warptype]))
+	local start = warps_bytes[warptype][1]
+	local len = warps_bytes[warptype][2] - warps_bytes[warptype][1]
+	local subdata = {}
+	for i = 0, (len * 8) - 1 do
+		subdata[i+1] = (ashita.bits.unpack_be(warps_util.warps_data, start, i, 1) == 1);
+	end
 	local total, complete = 0, 0
 	local output_list = {}
 	-- check for obtained warp
 	for index, name in pairs(maps[warptype]) do
 		total = total+1
 		local completion = false
-		if util.has_bit(subdata, index) then
+		if util.has_bit(subdata, index+1) then
 			complete = complete+1
 			completion = true
 		end

@@ -444,7 +444,7 @@ ashita.events.register('packet_in', 'incoming chunk', function(e)
 	
 	if e.id == 0x008 then
 		-- do visited zones
-		warps_util.log_visitedzones(e.data)
+		warps_util.log_visitedzones(e)
 	
 	elseif e.id == 0x01B then
 		--mastery rank
@@ -463,10 +463,10 @@ ashita.events.register('packet_in', 'incoming chunk', function(e)
 
 	elseif e.id == 0x044 then
 		-- PUP attachments
-		local job = struct.unpack('H', e.data, 0x04 + 0x01)
-		local subjob = struct.unpack('H', e.data, 0x05 + 0x01)
-		if job == 18 and not subjob then -- if PUP main
-			update_pupattachments(e.data)
+		local job = struct.unpack('B', e.data, 0x04 + 0x01)
+		local subjob = struct.unpack('B', e.data, 0x05 + 0x01)
+		if job == 18 and subjob == 0 then -- if PUP main
+			update_pupattachments(e)
 		end
 
 	
@@ -531,7 +531,7 @@ ashita.events.register('packet_in', 'incoming chunk', function(e)
 		local order = struct.unpack('H', e.data, 0x04 + 0x01)
 		-- do warps
 		if (order == 6) then 
-			warps_util.warps_data = e.data
+			warps_util.warps_data = e.data_raw
 			warps_util.log_warps('homepoints')
 			warps_util.log_warps('survivalguides')
 			warps_util.log_warps('waypoints')
@@ -842,7 +842,7 @@ log_corsairrolls = function()
 	for id, _ in pairs(corsairrollsids) do
 		local completion = false
 		total = total + 1
-		if (playerinfo:HasAbility(id)) or (playertracker.corsairrolls[id] == true) then
+		if (playerinfo:HasAbility(id) == true) or (playertracker.corsairrolls[id] == true) then
 			-- roll learned
 			obtained = obtained + 1
 			playertracker.corsairrolls[id] = true
@@ -863,25 +863,29 @@ log_corsairrolls = function()
 	}
 end
 
-update_pupattachments = function(data)
+update_pupattachments = function(e)
 	local total, obtained = 0, 0
 	local pup_map = require('maps/pup')
 	local pup_bitfields = {
-		['Available_Heads'] = data:sub(0x018+1, 0x018+4),
-		['Available_Bodies'] = data:sub(0x01C+1, 0x01C+4),
-		['Fire_Attachments'] = data:sub(0x038+1, 0x038+4),
-		['Ice_Attachments'] = data:sub(0x03C+1, 0x03C+4),
-		['Wind_Attachments'] = data:sub(0x040+1, 0x040+4),
-		['Earth_Attachments'] = data:sub(0x044+1, 0x044+4),
-		['Thunder_Attachments'] = data:sub(0x048+1, 0x048+4),
-		['Water_Attachments'] = data:sub(0x04C+1, 0x04C+4),
-		['Light_Attachments'] = data:sub(0x050+1, 0x050+4),
-		['Dark_Attachments'] = data:sub(0x054+1, 0x054+4),
+		['Available_Heads'] = 0x018,
+		['Available_Bodies'] = 0x01C,
+		['Fire_Attachments'] = 0x038,
+		['Ice_Attachments'] = 0x03C,
+		['Wind_Attachments'] = 0x040,
+		['Earth_Attachments'] = 0x044,
+		['Thunder_Attachments'] = 0x048,
+		['Water_Attachments'] = 0x04C,
+		['Light_Attachments'] = 0x050,
+		['Dark_Attachments'] = 0x054,
 	}
-	for pupattachments_category, bitfield in pairs(pup_bitfields) do
+	for pupattachments_category, start in pairs(pup_bitfields) do
+		local bitfield = {}
+		for i = 0,31 do
+			bitfield[i+1] = (ashita.bits.unpack_be(e.data_raw, start, i, 1) == 1);
+		end
 		for id, name in pairs(pup_map[pupattachments_category]) do
 			total = total + 1
-			if util.has_bit(bitfield, id) then
+			if util.has_bit(bitfield, id+1) then
 				obtained = obtained + 1
 				playertracker.pupattachments[pupattachments_category][id] = true
 			end
