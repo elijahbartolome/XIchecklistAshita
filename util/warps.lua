@@ -4,7 +4,7 @@ local maps = require('../maps/warps')
 local zones = require('../maps/zones')
 
 local warps_bytes = {
-	homepoints = {0x08, 0x17},
+	homepoints = {0x08, 0x18},
 	survivalguides = {0x18, 0x27},
 	waypoints = {0x28 , 0x37},
 	telepoints = {0x38, 0x3B},
