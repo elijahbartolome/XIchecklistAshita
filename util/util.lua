@@ -70,8 +70,8 @@ end
 
 util.fourbits = function(data)
 	local result = 0
-	for i = 0, 3 do
-		result = result + 2^(i) * (data[i] and 1 or 0)
+	for i = 1, 4 do
+		result = result + 2^(i-1) * (data[i] and 1 or 0)
 	end
 	return result
 end
